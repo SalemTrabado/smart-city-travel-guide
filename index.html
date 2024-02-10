@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>City Travel Guide</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href=https://unpkg.com/leaflet@1.7.1/dist/leaflet.css />
+
+ 
+
+    <link rel="stylesheet" href=https://unpkg.com/leaflet@1.7.1/dist/leaflet.css />
+
+
+    <link rel="stylesheet" href=https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css />
+   
+
+</head>
+
+<body>
+    <header>
+        <h1 class="logo"><a href="index.html">Smart City Travel Guide</a></h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Create a Route</a></li>
+                <li><a href="explore.html">Explore Destination</a></li>
+            </ul>
+        </nav>
+    </header>
+    <section>
+      <h1>Create a Route</h1>
+
+
+      Location: <input id="destination" type="text" onkeydown="checkEnter(event)" style="margin-bottom: 20px; font-size: 13pt;">
+      
+      <button onclick="clearMarkers()" style="margin-bottom: 20px;">Clear Markers</button>
+      
+      <button onclick="getRoute()" style="margin-bottom: 20px;">Create Shortcut Route</button>
+      
+       
+      
+      <h2>Please limit the map search within Metro Manila.</h2>
+      
+       
+      
+      <div id="map"></div>
+
+      <footer>
+        All rights reserved.
+      </footer>
+      
+       
+      
+      <script src=https://unpkg.com/leaflet@1.4.0/dist/leaflet.js></script>
+      
+      <script src=https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js></script>
+      
+       
+      
+      <script>
+      
+         var markers = [];
+      
+         var polyline = null;
+      
+         var map = L.map('map', {
+      
+              center: [14.6091, 121.0223],
+      
+              zoom: 11,
+      
+              maxBounds: [
+      
+                [14.3036, 120.7856],
+      
+                [14.8887, 121.2877]
+      
+              ],
+      
+              minZoom: 10,
+      
+              maxZoom: 18
+      
+            });
+      
+       
+      
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      
+            attribution: 'Map data &copy; <a href=https://www.openstreetmap.org/>OpenStreetMap</a> contributors',
+      
+            maxZoom: 18,
+      
+          }).addTo(map);
+      
+       
+      
+         function getDestinationCoordinates(name) {
+      
+           return fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${name}`)
+      
+              .then(response => response.json())
+      
+              .then(data => {
+      
+                if (data.length > 0) {
+      
+                  return [data[0].lat, data[0].lon];
+      
+                } else {
+      
+                  throw new Error('No coordinates found for this destination');
+      
+                }
+      
+              });
+      
+         }
+      
+       
+      
+         function addToMap() {
+      
+            var destinationName = document.getElementById('destination').value;
+      
+       
+      
+            getDestinationCoordinates(destinationName)
+      
+              .then(destinationCoordinates => {
+      
+                var destinationLocation = L.latLng(destinationCoordinates[0], destinationCoordinates[1]);
+      
+                var destinationMarker = L.marker(destinationLocation).addTo(map);
+      
+                markers.push(destinationMarker);
+      
+                map.panTo(destinationLocation);
+      
+               })
+      
+              .catch(err => {
+      
+                console.error(err);
+      
+                alert("Could not find location");
+      
+              });
+      
+          }
+      
+       
+      
+          function clearMarkers() {
+      
+              for (i = 0; i < markers.length; i++) {
+      
+                map.removeLayer(markers[i]);
+      
+              }
+      
+              markers = [];
+      
+              if (polyline != null) {
+      
+                map.removeLayer(polyline);
+      
+                polyline = null;
+      
+              }
+      
+              document.querySelector('#destination').value = "";
+      
+       
+      
+          }
+      
+       
+      
+          function checkEnter(event) {
+      
+              if (event.key === 'Enter') {
+      
+                event.preventDefault();
+      
+                addToMap(); 
+      
+              }
+      
+          }
+      
+       
+      
+          function getRoute() {
+      
+           if (markers.length >= 2) {
+      
+             var start = markers[0].getLatLng();
+      
+             var end = markers[1].getLatLng();
+      
+       
+      
+             var serviceUrl = 'http://router.project-osrm.org/route/v1/driving/'
+      
+             + start.lng + ',' + start.lat + ';' + end.lng + ',' + end.lat
+      
+             + '?overview=full&geometries=geojson';
+      
+       
+      
+             $.ajax({
+      
+               method: 'GET',
+      
+               url: serviceUrl,
+      
+               dataType: 'JSON',
+      
+               success: function(data) {
+      
+                 var route = data.routes[0].geometry.coordinates;
+      
+                 var routeCoords = route.map(function(point) {
+      
+                   return [point[1], point[0]];
+      
+                 });
+      
+                 if (polyline != null) {
+      
+                   map.removeLayer(polyline);
+      
+                 }
+      
+                 polyline = L.polyline(routeCoords, {color: 'red'}).addTo(map);
+      
+                 map.fitBounds(polyline.getBounds());
+      
+               }
+      
+             });
+      
+           }
+      
+         }
+      
+      </script>     
+     
+
+    </section>
+    
+</body>
+
+
+</html>
