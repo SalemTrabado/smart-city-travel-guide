@@ -38,7 +38,7 @@
       
       <button onclick="getRoute()" style="margin-bottom: 20px;">Create Shortcut Route</button>
       
-       
+      <button onclick="location.href = 'explore.html'"; id="Home" style="margin-bottom: 20px;">Back to Travel Guide</button>
       
       <h2>Please limit the map search within Metro Manila.</h2>
       
@@ -50,7 +50,11 @@
         All rights reserved.
       </footer>
       
-       
+      <script src="explore.html">
+  document.getElementById("Home").onClick = function(){
+    location.href="explore.html"	
+  };
+</script>
       
       <script src=https://unpkg.com/leaflet@1.4.0/dist/leaflet.js></script>
       
