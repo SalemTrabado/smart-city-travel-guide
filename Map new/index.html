@@ -12,14 +12,17 @@
             margin: 0;
             display: flex;
             flex-direction: column;
-            background-color: black;
+            background-color: dimgray;
         }
 
         #header {
             flex: 0 0 auto;
-            color: rgb(7, 4, 18);
+            color: white;
+            display: flex;
+            padding: 15px;
+            
         }
-
+        
         #map {
             background-image:
                 /* linear-gradient(to bottom, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), */
@@ -54,6 +57,14 @@
             height: 800px;
             overflow: auto;
             margin: auto;
+        }
+
+        .container-fluid {
+            background-image: linear-gradient(#4169E1, #4682B4);
+        }
+
+        .containerner {
+            margin-left: -100px;
         }
 
         .link {
@@ -132,28 +143,33 @@
             color: gray;
         }
 
+        .card-body {
+            border-style: groove;
+            border-radius: 12px;
+        }
+
         #breadcrumb {
             font-size: small;
-            margin-top: 0px;
-            padding-top: 0px;
-            padding-left: 10px;
-            ;
+            padding-bottom: 350px;
+            border-style: groove;
+            border-radius: 12px;
         }
     </style>
 </head>
 
 <body>
 
-    <header id="header" class="container-fluid bg-light py-3">
+    <header id="header" class="container-fluid">
         <h1 class="text-center">SMART CITY TRAVEL GUIDE</h1>
     </header>
 
-    <main id="cnt" class="container mt-5">
+    <main id="cnt" class="containerner">
         <div class="row justify-content-md-center">
             <div class="col-lg-4">
                 <div class="card">
+                    <h3 class="card-title">Route Finder</h3>
                     <div class="card-body">
-                        <h5 class="card-title">Route Finder</h5>
+                    
 
                         <div class="form-group row">
                             <label for="start" class="col-lg-8">Start:</label>
@@ -172,6 +188,9 @@
                         <button onclick='findPath()' class="btn btn-primary">Find Route</button>
                         <button onclick="reset()" class="btn btn-danger">Reset</button>
                     </div>
+
+                    <h3>Routes Distance Comparison</h3>
+
                     <div id="breadcrumb">
                         <div id="distance"><span id="total_distance"></span></div>
                         <div id="otherdistance"><span id="other_total_distance"></span></div>
