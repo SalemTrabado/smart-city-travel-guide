@@ -12,14 +12,17 @@
             margin: 0;
             display: flex;
             flex-direction: column;
-            background-color: black;
+            background-color: dimgray;
         }
 
         #header {
             flex: 0 0 auto;
-            color: rgb(7, 4, 18);
+            color: white;
+            display: flex;
+            padding: 15px;
+            
         }
-
+        
         #map {
             background-image:
                 /* linear-gradient(to bottom, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), */
@@ -54,6 +57,14 @@
             height: 800px;
             overflow: auto;
             margin: auto;
+        }
+
+        .container-fluid {
+            background-image: linear-gradient(#4169E1, #4682B4);
+        }
+
+        .containerner {
+            margin-left: -100px;
         }
 
         .link {
@@ -132,28 +143,33 @@
             color: gray;
         }
 
+        .card-body {
+            border-style: groove;
+            border-radius: 12px;
+        }
+
         #breadcrumb {
             font-size: small;
-            margin-top: 0px;
-            padding-top: 0px;
-            padding-left: 10px;
-            ;
+            padding-bottom: 350px;
+            border-style: groove;
+            border-radius: 12px;
         }
     </style>
 </head>
 
 <body>
 
-    <header id="header" class="container-fluid bg-light py-3">
+    <header id="header" class="container-fluid">
         <h1 class="text-center">SMART CITY TRAVEL GUIDE</h1>
     </header>
 
-    <main id="cnt" class="container mt-5">
+    <main id="cnt" class="containerner">
         <div class="row justify-content-md-center">
             <div class="col-lg-4">
                 <div class="card">
+                    <h3 class="card-title">Route Finder</h3>
                     <div class="card-body">
-                        <h5 class="card-title">Route Finder</h5>
+                    
 
                         <div class="form-group row">
                             <label for="start" class="col-lg-8">Start:</label>
@@ -172,6 +188,9 @@
                         <button onclick='findPath()' class="btn btn-primary">Find Route</button>
                         <button onclick="reset()" class="btn btn-danger">Reset</button>
                     </div>
+
+                    <h3>Routes Distance Comparison</h3>
+
                     <div id="breadcrumb">
                         <div id="distance"><span id="total_distance"></span></div>
                         <div id="otherdistance"><span id="other_total_distance"></span></div>
@@ -271,16 +290,16 @@
         var universitperpetualhelp_cityhalllaspinas = 1;
         var cityhalllaspinas_maxzapote = 1;
         var colours_amaia = 1;
-        var amai_bfresort = 3;
-        var bfresort_startmall = 2;
+        var amai_bfresort = 1;
+        var bfresort_startmall = 1;
         var bfresort_landers = 1;
-        var landers_jolibeemolino = 2;
+        var landers_jolibeemolino = 1;
         var jolibeemolino_colours = 1;
         var startmall_shellgasstationsucat = 1;
-        var shellgasstationsucat_smsucat = 3;
+        var shellgasstationsucat_smsucat = 1;
         var smsucat_shopwise = 1;
         var shopwise_coastalmall = 2;
-        var coastalmall_maxzapote = 2;
+        var coastalmall_maxzapote = 1;
 
 
         // define distance betwen locations
@@ -335,6 +354,34 @@
             .attr('x', d => d[1].x - 10)
             .attr('y', d => d[1].y + 5)
             .text((d) => d[0]);
+
+
+        var nodes2 = {
+            ["Eurotel Hotel"]: { x: 199, y: 350 },
+            ["Jaka Mall"]: { x: 101, y: 232 },
+            ["Builoding 2"]: { x: 231, y: 132 },
+            ["Builoding 3"]: { x: 151, y: 532 },
+        };
+        function CreateBuildingsUsingNode2() {
+            svg.selectAll('circle.node2').data(Object.entries(nodes2)).enter().append('circle')
+                .attr('class', 'node2')
+                .attr('r', 11)
+                .attr('cx', d => d[1].x)
+                .attr('cy', d => d[1].y)
+                .style('stroke', 'gray')
+                .style('fill', 'yellow'); 
+
+            svg.selectAll('text.node2').data(Object.entries(nodes2)).enter().append('text')
+                .attr('x', d => d[1].x - 10)
+                .attr('y', d => d[1].y + 5)
+                .text((d) => d[0])
+                .style('fill', 'gray') 
+                .style('font-weight', 'bold'); 
+        }
+        this.CreateBuildingsUsingNode2();
+
+
+
 
         let INFINITY = 1 / 0;
 
@@ -398,6 +445,7 @@
         // if the user clicks Find Routes button then this function will be triggered
         const findPath = () => {
             reset();
+            this.CreateBuildingsUsingNode2();
             let start = document.querySelector('#start').value;
             let end = document.querySelector('#end').value;
 
@@ -619,7 +667,7 @@
 
                 case ((start === atc && end === max) || (start === max && end === atc)):
                     tot = festival_atc + starmall_festival + startmall_shellgasstationsucat + shellgasstationsucat_smsucat + smsucat_shopwise + shopwise_coastalmall + coastalmall_maxzapote;
-                    lineHelper([atc, fes, sta, she, sms, sho, coa, max], fes, tot);
+                    lineHelper([atc, fes, sta, she, sms, sho, coa, max], fse, tot);
                     break;
 
                 case ((start === atc && end === coa) || (start === coa && end === atc)):
@@ -1213,7 +1261,7 @@
             else if ((start == sou && end == col) || (start == col && end == sou)) { totalShortDistance = southmall_colours; }
             else if ((start == sou && end == uni) || (start == uni && end == sou)) { totalShortDistance = southmall_colours + colours_universitperpetualhelp; }
             else if ((start == sou && end == cit) || (start == cit && end == sou)) { totalShortDistance = southmall_colours + colours_universitperpetualhelp + universitperpetualhelp_cityhalllaspinas; }
-            else if ((start == sou && end == max) || (start == max && end == sou)) { totalShortDistance = southmall_colours + colours_universitperpetualhelp + universitperpetualhelp_cityhalllaspinas + cityhalllaspinas_maxzapote; }
+            else if ((start == sou && end == max) || (start == max && end == sou)) { totalShortDistance = southmall_colours + colours_universitperpetualhelp + universitperpetualhelp_cityhalllaspinas + cityhalllaspinas_maxzapotee; }
 
             // 2 coastal
             else if ((start == sou && end == she) || (start == she && end == sou)) { totalShortDistance = atc_southmall + festival_atc + starmall_festival + startmall_shellgasstationsucat; }
