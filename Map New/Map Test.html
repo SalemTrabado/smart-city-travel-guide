@@ -1,0 +1,3289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Map Graph</title>
+<link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"/>
+      <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet" />
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+      <script src="https://d3js.org/d3.v5.min.js"></script>
+<style>
+  /* header content */
+  .header {
+    flex: 0 0 auto;
+    color: rgb(7, 4, 18); /* 10% of the viewport height */
+  }
+    html,
+    body {
+        height: 100%;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        background-color: black;
+      }
+  /* Sidebar content */
+  .sidebar {
+    background-color: #0e223e;
+    height: 90vh; /* Adjusting to fill the screen height minus header */
+  }
+
+  .container-main {
+      width: 70px;
+        height: 500px;
+        min-width: 70px;
+        z-index: 1000;
+        transition: all .25s ease-in-out;
+        display: flex;
+        flex-direction: column;
+        background-color: #0e223e;
+  }
+    :after
+    :before {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    }
+
+    a {
+    text-decoration: none;
+    }
+
+    li {
+    list-style: none;
+    }
+
+    h1 {
+    font-weight: 600;
+    font-size: 1.5rem;
+    }
+
+    body {
+    font-family: 'Poppins', sans-serif;
+    }
+
+    .wrapper{
+        display: flex;
+    }
+
+    .main{
+        min-height: 100vh;
+        width: 100%;
+        overflow: hidden;
+        transition: all 0.35s ease-in-out;
+        background-color: #fafbfe;
+      }
+
+    #sidebar{
+      width: 70px;
+      height: 500px;
+      min-width: 70px;
+      z-index: 1000;
+      transition: all .25s ease-in-out;
+      display: flex;
+      flex-direction: column;
+      background-color: #0e223e;
+    }
+
+    #sidebar.expand {
+        width: 260px;
+        min-width: 260px;
+      }
+
+    #toggle-btn {
+        background-color: transparent;
+        cursor: pointer;
+        border: 0;
+        padding: 1rem 1.5rem;
+      }
+    #toggle-btn i{
+        font-size: 1.5rem;
+        color: #ffff;
+      }
+    .sidebar-logo {
+        margin: auto 0;
+      }
+
+    .sidebar-logo a {
+        color: #ffff;
+        font-size: 1.15rem;
+        font-weight: 600;
+      }
+    #sidebar:not(.expand) .sidebar-logo,
+    #sidebar:not(.expand) a.sidebar-link span {
+        display: none;
+      }
+    .sidebar-nav {
+        padding: 2rem 0;
+        flex: 1 1 auto;
+      }
+    a.sidebar-link{
+        padding: .625 1.625rem;
+        color: #FFF;
+        display: block;
+        font-size: 0.9rem;
+        white-space: nowrap;
+        border-left: 3px solid transparent;
+      }
+    .sidebar-link i {
+    font-size: 1.1rem;
+    margin-right: .75rem;
+      }
+
+      a.sidebar-link:hover {
+    background-color: rgba(255, 255, 255, .075);
+    border-left: 3px solid #3b7ddd;
+      }
+
+    .sidebar-item {
+    position: relative;
+      }
+      
+    #sidebar:not(.expand) .sidebar-item .sidebar-dropdown {
+    position: absolute;
+    top: 0;
+    left: 70px;
+    background-color: #0e2238;
+    padding: 0;
+    min-width: 15rem;
+    display: none;
+      }
+      #sidebar:not(.expand) .sidebar-item:hover .has-dropdown+.sidebar-dropdown {
+    display: block;
+    max-height: 15em;
+    width: 100%;
+    opacity: 1;
+      }
+      #sidebar.expand .sidebar-link[data-bs-toggle="collapse"]::after {
+    border: solid;
+    border-width: 0 .075rem .075rem 0;
+    content: "";
+    display: inline-block;
+    padding: 2px;
+    position: absolute;
+    right: 1.5rem;
+    top: 1.4rem;
+    transform: rotate(-135deg);
+    transition: all .2s ease-out;
+      }
+    
+      #sidebar.expand .sidebar-link[data-bs-toggle="collapse"].collapsed::after {
+    transform: rotate(45deg);
+    transition: all .2s ease-out;
+      }
+  
+  /* map content */
+  #map {
+        background-image:
+                /* linear-gradient(to bottom, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), */ linear-gradient(
+            to bottom,
+            rgba(255, 255, 255, 0.3),
+            rgba(255, 255, 255, 0.3)
+          ),
+          url("map_lp.png");
+        background-size: cover;
+        display: block;
+        margin: auto;
+        border: 1px solid black;
+      }
+
+      #cnt {
+        flex: 1 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      #footer {
+        flex: 0 0 auto;
+      }
+
+      #content {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .scrollable {
+        width: 800px;
+        height: 800px;
+        overflow: auto;
+        margin: auto;
+      }
+
+      .link {
+        fill: none;
+        stroke: gray;
+        stroke-width: 3;
+      }
+
+      .start {
+        fill: green;
+        stroke: black;
+        stroke-width: 3px;
+      }
+
+      .end {
+        fill: red;
+        stroke: black;
+        stroke-width: 3px;
+      }
+
+      .selected {
+        stroke: red;
+        stroke-width: 5;
+      }
+
+      /* set circle color */
+      .node {
+        fill: rgb(162, 224, 17);
+        stroke: green;
+        stroke-width: 3px;
+      }
+
+      text {
+        fill: rgb(25, 6, 49);
+        font-weight: bolder;
+      }
+
+      .float-left {
+        float: left;
+      }
+
+      .dropdown-width {
+        width: 300px;
+      }
+
+      .tooltip {
+        position: absolute;
+        text-align: center;
+        padding: 10px;
+        font-size: 20px;
+        background: yellow;
+        color: #333;
+        border: 1px solid rgb(15, 7, 7);
+        border-radius: 5px;
+        opacity: 0.8;
+        pointer-events: none;
+        cursor: pointer;
+      }
+    
+      .start,
+      .end,
+      .node {
+        stroke: black;
+        stroke-width: 3px;
+        cursor: pointer;
+      }
+
+      #distance {
+        font-size: larger;
+        font-weight: bold;
+      }
+
+      #otherdistance {
+        font-size: larger;
+        font-weight: bold;
+        color: gray;
+      }
+
+      #breadcrumb {
+        font-size: small;
+        margin-top: 0px;
+        padding-top: 0px;
+        padding-left: 10px;
+      }
+
+</style>
+</head>
+<body>
+<div class="container-fluid p-0">
+  <div class="header">
+    <!-- Header Content -->
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" 
+          integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" 
+          crossorigin="anonymous"></script>
+    <div class="container-fluid p-0">
+      <header id="header" class="container-fluid bg-light py-3">
+        <div class="text-center">
+          <h1>SMART CITY TRAVEL GUIDE</h1>
+        </div>
+        </header>
+    </div>
+  </div>
+  <div class="row g-0">
+    <div class="col-2 sidebar">
+      <!-- Sidebar Content -->
+      <aside id="sidebar"> 
+        <div class="d-flex">
+          <button id="toggle-btn" type="button">
+            <i class="lni lni-grid-alt"></i>
+          </button>
+          <div class="sidebar-logo">
+            <a href="#">Smart City Guide</a>
+          </div>
+        </div>
+        <div>
+        <ul class="sidebar-item">
+            <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse" data-bs-target="#cat" 
+              aria-expanded="false" aria-controls="cat">
+              <i class="lni lni-search"></i>
+              <span>Categories</span>
+            </a>
+            <ul id="cat" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+              <li class="sidebar-item">
+
+                <a href="#" class="sidebar-link">Hotel</a>
+              </li>
+              <li class="sidebar-item">
+                <a href="#" class="sidebar-link">Restaurants</a>
+              </li>
+            </ul>
+          </ul>
+        <ul class="sidebar-item">
+              <a href="#" class="sidebar-link has-dropdown collapsed" data-bs-toggle="collapse" data-bs-target="#recom" 
+                aria-expanded="false" aria-controls="recom">
+                <i class="lni lni-search"></i>
+                <span>Recommendation</span>
+              </a>
+              <ul id="recom" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+                <li class="sidebar-item">
+                  <a href="#" class="sidebar-link">Top Hotels in San Juan</a>
+                </li>
+                <li class="sidebar-item">
+                  <a href="#" class="sidebar-link">Top Restaurants in San Juan</a>
+                </li>
+              </ul>
+          </ul>
+      </aside>
+    </div>
+
+    <!-- Map and Route Finder Content -->
+    <div class="col-lg-8">
+      <!-- <div id="container" class="scrollable"> -->
+          <main id="cnt" class="container">
+          <div class="row justify-content-md-center">
+            <div class="col-lg-4">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">Route Finder</h5>
+    
+                  <div class="form-group row">
+                    <label for="start" class="col-lg-8">Start:</label>
+                    <div class="col-lg-6">
+                      <select
+                        id="start"
+                        class="form-control mb-2 dropdown-width"
+                      ></select>
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label for="end" class="col-lg-8">End:</label>
+                    <div class="col-lg-6">
+                      <select
+                        id="end"
+                        class="form-control mb-2 dropdown-width"
+                      ></select>
+                    </div>
+                  </div>
+                  <button onclick="findPath()" class="btn btn-primary">
+                    Find Route
+                  </button>
+                  <button onclick="reset()" class="btn btn-danger">Reset</button>
+                </div>
+                <div id="breadcrumb">
+                  <div id="distance"><span id="total_distance"></span></div>
+                  <div id="otherdistance">
+                    <span id="other_total_distance"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-8">
+              <!-- <div id="container" class="scrollable"> -->
+              <div id="container">
+                <svg id="map" width="1200" height="800"></svg>
+              </div>
+            </div>
+          </div>
+        </main>
+    </div>
+  </div>
+  <script>
+      var totalShortDistance = 0;
+      var totalOtherRoutesDistance = 0;
+      window.onload = function () {
+        const start_select = document.getElementById("start");
+        const end_select = document.getElementById("end");
+        Object.keys(nodes).forEach((key) => {
+          let option1 = document.createElement("option");
+          option1.text = key;
+          option1.value = key;
+          start_select.add(option1);
+
+          let option2 = document.createElement("option");
+          option2.text = key;
+          option2.value = key;
+          end_select.add(option2);
+        });
+      };
+
+      // create location code:
+      // use this if I want to rename the location
+      var sta = "Starmall - Alabang";
+      var fes = "Festival Mall";
+      var atc = "ATC Mall"; // bfrda
+      var sou = "Southmall";
+      var col = "Colours Mall Moonwalk"; // moonwalk public market
+      var uni = "University of Perpetual Help";
+      var cit = "City Hall Las Pinas";
+      var max = "Max's Restaurant - Zapote"; // new max
+      var coa = "Costal Mall";
+      var sho = "Shopwise Sucat"; // ama
+      var sms = "SM Sucat"; // sm sucat
+      var she = "Shell Gas Station - Sucat Road"; // Shell Sucat Road
+      var bfr = "BF Ressort Drive"; // (new) from amalibbee-pillar go to BF Resort  to Starmall
+      var ama = "Amaia Steps Pillar Alabang"; // pillar village
+      var lan = "Landers"; // (new) from amalibee-pillar to Landers
+      var jol = "Jollibee Molino";
+
+      // User this if i want to change the coordinates x and y (circle x,y pos)
+      var Starmallx = 531;
+      var Starmally = 40;
+      var FestivalMallx = 431;
+      var FestivalMally = 155;
+      var ATCx = 320;
+      var ATCy = 210;
+      var Southmallx = 215;
+      var Southmally = 300;
+      var Shox = 240;
+      var Shoy = 520;
+      var AmiaStepsPillarx = 565;
+      var AmiaStepsPillary = 266;
+      var Bfx = 715;
+      var Bfy = 106;
+      var Landersx = 1000;
+      var Landersy = 216;
+      var Coloursx = 395;
+      var Coloursy = 370;
+      var SmSucatx = 85;
+      var SmSucaty = 370;
+      var ShellStationSucatx = 71;
+      var ShellStationSucaty = 83;
+      var UniversityofPerpetualHelpx = 508;
+      var UniversityofPerpetualHelpy = 470;
+      var CityHallx = 616;
+      var CityHally = 575;
+      var MaxZapotex = 730;
+      var MaxZapotey = 680;
+      var CostalMallx = 340;
+      var CostalMally = 630;
+      var JollibeeMolinox = 950;
+      var JollibeeMolinoy = 500;
+
+      // distance configuration
+      var starmall_festival = 1;
+      var festival_atc = 1;
+      var atc_southmall = 1;
+      var southmall_colours = 1;
+      var colours_universitperpetualhelp = 1;
+      var universitperpetualhelp_cityhalllaspinas = 1;
+      var cityhalllaspinas_maxzapote = 1;
+      var colours_amaia = 1;
+      var amai_bfresort = 1;
+      var bfresort_startmall = 1;
+      var bfresort_landers = 1;
+      var landers_jolibeemolino = 1;
+      var jolibeemolino_colours = 1;
+      var startmall_shellgasstationsucat = 1;
+      var shellgasstationsucat_smsucat = 1;
+      var smsucat_shopwise = 1;
+      var shopwise_coastalmall = 2;
+      var coastalmall_maxzapote = 1;
+
+      // define distance betwen locations
+      let connections = {
+        [sta]: {
+          [fes]: starmall_festival,
+          [she]: startmall_shellgasstationsucat,
+        },
+        [fes]: { [atc]: festival_atc },
+        [atc]: { [sou]: atc_southmall },
+        [sou]: { [col]: southmall_colours },
+        [col]: {
+          [uni]: colours_universitperpetualhelp,
+          [ama]: colours_amaia,
+          [jol]: jolibeemolino_colours,
+        },
+        [uni]: { [cit]: universitperpetualhelp_cityhalllaspinas },
+        [cit]: { [max]: cityhalllaspinas_maxzapote },
+        [max]: { [coa]: coastalmall_maxzapote },
+        [ama]: { [bfr]: amai_bfresort },
+        [bfr]: { [lan]: bfresort_landers, [sta]: bfresort_startmall },
+        [lan]: { [jol]: landers_jolibeemolino },
+        [she]: { [sms]: shellgasstationsucat_smsucat },
+        [sms]: { [sho]: smsucat_shopwise },
+        [sho]: { [coa]: shopwise_coastalmall },
+        [coa]: { [max]: coastalmall_maxzapote },
+      };
+
+      // define the nodes where I applied the cooordinates  ****
+      var nodes = {
+        [sta]: { x: Starmallx, y: Starmally }, // 0
+        [fes]: { x: FestivalMallx, y: FestivalMally }, // 1
+        [atc]: { x: ATCx, y: ATCy }, // 2
+        [sou]: { x: Southmallx, y: Southmally }, // 3
+        [col]: { x: Coloursx, y: Coloursy }, // 4
+        [uni]: { x: UniversityofPerpetualHelpx, y: UniversityofPerpetualHelpy }, // 5
+        [cit]: { x: CityHallx, y: CityHally }, // 6
+        [max]: { x: MaxZapotex, y: MaxZapotey }, // 7
+        [coa]: { x: CostalMallx, y: CostalMally }, // 8
+        [sho]: { x: Shox, y: Shoy }, // 9
+        [sms]: { x: SmSucatx, y: SmSucaty }, //10
+        [she]: { x: ShellStationSucatx, y: ShellStationSucaty }, // 11
+        [bfr]: { x: Bfx, y: Bfy }, // 12
+        [ama]: { x: AmiaStepsPillarx, y: AmiaStepsPillary }, // 13
+        [lan]: { x: Landersx, y: Landersy }, // 14
+        [jol]: { x: JollibeeMolinox, y: JollibeeMolinoy }, // 15
+      };
+
+      var svg = d3.select("svg");
+
+      let INFINITY = 1 / 0;
+
+      // once i added a new location then I will need to manually adjust this
+      showAllLines();
+
+      let locations = [
+        [
+          Infinity,
+          1,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          2,
+          3,
+          Infinity,
+          Infinity,
+          Infinity,
+        ], // "Starmall" 0
+
+        [
+          1,
+          Infinity,
+          1,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+        ], //Festival Mall" 1
+
+        [
+          Infinity,
+          1,
+          Infinity,
+          1,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+        ], // ATC Las Pinas" 2
+
+        [
+          Infinity,
+          Infinity,
+          1,
+          Infinity,
+          1,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+        ], // Southmall" 3
+
+        [
+          Infinity,
+          Infinity,
+          Infinity,
+          1,
+          Infinity,
+          2,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          3,
+          Infinity,
+          2,
+        ], // Colours" 4
+
+        [
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          1,
+          Infinity,
+          1,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+        ], // Uni" 5
+
+        [
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          1,
+          Infinity,
+          1,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+        ], // City hall las pinas" 6
+
+        [
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          1,
+          Infinity,
+          2,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+        ], // MAX  7
+
+        [
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          2,
+          Infinity,
+          2,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+        ], //  Costal 8 - 2
+
+        [
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          2,
+          Infinity,
+          2,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+        ], // " SHOWP WISE" 9 - 2
+
+        [
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          2,
+          Infinity,
+          2,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+        ], // SM SUCAT 10 -2
+
+        [
+          2,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          1,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+        ], // "Shell Sucat" 11 - 2
+
+        [
+          3,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          2,
+          1,
+          Infinity,
+        ], // BF" Stop 12 - 3
+
+        [
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          1,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          1,
+          Infinity,
+          Infinity,
+          Infinity,
+        ], // "Amaia" 13 - 3
+
+        [
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          1,
+          Infinity,
+          Infinity,
+          1,
+        ], // "Landers" 14 - 3
+
+        [
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          1,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          1,
+          Infinity,
+        ], // " Jolibee Molino" 15 - 3
+      ];
+
+      function constructPath(shortestPathInfo, endVertex) {
+        let path = [];
+        while (endVertex != shortestPathInfo.startVertex) {
+          path.unshift(endVertex);
+          endVertex = shortestPathInfo.predecessors[endVertex];
+        }
+        return path;
+      }
+
+      // Helper function to get index of a node name
+      const getIndex = (name) => {
+        return Object.keys(nodes).indexOf(name);
+      };
+
+      // Helper function to get the node name by index
+      const getNodeName = (index) => {
+        return Object.keys(nodes)[index];
+      };
+
+      // bagong gawa
+      function RefrshSgv() {
+        svg
+          .selectAll("circle")
+          .data(Object.entries(nodes))
+          .enter()
+          .append("circle")
+          .attr("class", "node")
+          .attr("r", 20)
+          .attr("cx", (d) => d[1].x)
+          .attr("cy", (d) => d[1].y);
+
+        // this code writes the location name of each circles
+        svg
+          .selectAll("text")
+          .data(Object.entries(nodes))
+          .enter()
+          .append("text")
+          .attr("x", (d) => d[1].x - 10)
+          .attr("y", (d) => d[1].y + 5)
+          .text((d) => d[0]);
+      }
+
+      // if the user clicks Find Routes button then this function will be triggered
+      const findPath = () => {
+        reset();
+        let start = document.querySelector("#start").value;
+        let end = document.querySelector("#end").value;
+
+        // let shortestPathInfo = shortestPath(locations, 12, getIndex(start)); // Changed 10 to 12
+        let shortestPathInfo = shortestPath(
+          locations,
+          Object.keys(nodes).length,
+          getIndex(start)
+        );
+        let route = constructPath(shortestPathInfo, getIndex(end));
+        route.unshift(getIndex(start));
+
+        svg
+          .selectAll("circle.node")
+          .attr("class", (d, i) =>
+            i === getIndex(start)
+              ? "start"
+              : i === getIndex(end)
+              ? "end"
+              : "node"
+          );
+
+        // short routes
+        let lineGenerator = d3
+          .line()
+          .x((d) => nodes[getNodeName(d)].x)
+          .y((d) => nodes[getNodeName(d)].y);
+        svg
+          .append("path")
+          .attr("d", lineGenerator(route))
+          .style("fill", "none")
+          .attr("stroke", "red")
+          .attr("stroke-width", 11);
+
+        // show tool tip
+        showStartToolTip();
+        showEndToolTip();
+
+        // calculate short route distance
+        // totalShortDistance = this.CalculateShortDistance();
+        // document.getElementById("total_distance").innerHTML = "<span style='color:red; font-weight: bolder'>" + "Shortest Route: "
+        //     + totalShortDistance + " km ";
+        this.Calculate();
+
+        // other routes
+        showAllLines();
+
+        // calculate and highlights other routes based on start and end locations
+        createOtherRoutesLinesAndCalculateTheTotalDistance();
+      };
+
+      //===========================================================================================
+      // alternate route
+      // this function creates long route lines with colors as their legends or indicators.
+      // this function also calculates the distances of longer routes.
+      function createOtherRoutesLinesAndCalculateTheTotalDistance() {
+        const start = document.querySelector("#start").value;
+        const end = document.querySelector("#end").value;
+        let clr = "blue";
+        document.getElementById("other_total_distance").innerHTML = "";
+
+        var tot = 0;
+
+        switch (true) {
+          // From Starmall
+          case (start === sta && end === fes) || (start === fes && end === sta): // Starmall to Festival Mall
+            tot =
+              bfresort_startmall +
+              amai_bfresort +
+              colours_amaia +
+              southmall_colours +
+              atc_southmall +
+              festival_atc;
+            lineHelper([sta, bfr, ama, col, sou, atc, fes], bfr, tot);
+            break;
+
+          case (start === sta && end === atc) || (start === atc && end === sta):
+            tot =
+              bfresort_startmall +
+              amai_bfresort +
+              colours_amaia +
+              southmall_colours +
+              atc_southmall;
+            lineHelper([sta, bfr, ama, col, sou, atc], bfr, tot);
+            break;
+
+          case (start === sta && end === sou) || (start === sou && end === sta):
+            tot =
+              bfresort_startmall +
+              amai_bfresort +
+              colours_amaia +
+              southmall_colours;
+            lineHelper([sta, bfr, ama, col, sou], bfr, tot);
+            break;
+
+          case (start === sta && end === col) || (start === col && end === sta):
+            tot = bfresort_startmall + amai_bfresort + colours_amaia;
+            lineHelper([sta, bfr, ama, col], bfr, tot);
+            tot =
+              startmall_shellgasstationsucat +
+              shellgasstationsucat_smsucat +
+              smsucat_shopwise +
+              shopwise_coastalmall +
+              coastalmall_maxzapote +
+              cityhalllaspinas_maxzapote +
+              universitperpetualhelp_cityhalllaspinas +
+              colours_universitperpetualhelp;
+            lineHelper([sta, she, sms, sho, coa, max, cit, uni, col], she, tot);
+            break;
+
+          case (start === sta && end === uni) || (start === uni && end === sta):
+            tot =
+              starmall_festival +
+              shellgasstationsucat_smsucat +
+              smsucat_shopwise +
+              shopwise_coastalmall +
+              coastalmall_maxzapote +
+              cityhalllaspinas_maxzapote +
+              universitperpetualhelp_cityhalllaspinas;
+            lineHelper([sta, she, sms, sho, coa, max, cit, uni], she, tot);
+            break;
+
+          case (start === sta && end === cit) || (start === cit && end === sta):
+            tot =
+              starmall_festival +
+              shellgasstationsucat_smsucat +
+              smsucat_shopwise +
+              shopwise_coastalmall +
+              coastalmall_maxzapote +
+              cityhalllaspinas_maxzapote;
+            lineHelper([sta, she, sms, sho, coa, max, cit], she, tot);
+            break;
+
+          case (start === sta && end === max) || (start === max && end === sta):
+            tot =
+              startmall_shellgasstationsucat +
+              shellgasstationsucat_smsucat +
+              smsucat_shopwise +
+              shopwise_coastalmall +
+              coastalmall_maxzapote;
+            lineHelper([sta, she, sms, sho, coa, max], she, tot);
+            break;
+
+          case (start === sta && end === coa) || (start === coa && end === sta):
+            tot =
+              starmall_festival +
+              festival_atc +
+              atc_southmall +
+              southmall_colours +
+              colours_universitperpetualhelp +
+              universitperpetualhelp_cityhalllaspinas +
+              cityhalllaspinas_maxzapote +
+              coastalmall_maxzapote;
+            lineHelper([sta, fes, atc, sou, col, uni, cit, max, coa], fes, tot);
+            break;
+
+          case (start === sta && end === sho) || (start === sho && end === sta):
+            tot =
+              starmall_festival +
+              festival_atc +
+              atc_southmall +
+              southmall_colours +
+              colours_universitperpetualhelp +
+              universitperpetualhelp_cityhalllaspinas +
+              cityhalllaspinas_maxzapote +
+              coastalmall_maxzapote +
+              shopwise_coastalmall;
+            lineHelper(
+              [sta, fes, atc, sou, col, uni, cit, max, coa, sho],
+              fes,
+              tot
+            );
+            break;
+
+          case (start === sta && end === sms) || (start === sms && end === sta):
+            tot =
+              starmall_festival +
+              festival_atc +
+              atc_southmall +
+              southmall_colours +
+              colours_universitperpetualhelp +
+              universitperpetualhelp_cityhalllaspinas +
+              cityhalllaspinas_maxzapote +
+              coastalmall_maxzapote +
+              shopwise_coastalmall +
+              smsucat_shopwise;
+            lineHelper(
+              [sta, fes, atc, sou, col, uni, cit, max, coa, sho, sms],
+              fes,
+              tot
+            );
+            break;
+
+          case (start === sta && end === she) || (start === she && end === sta):
+            tot =
+              starmall_festival +
+              festival_atc +
+              atc_southmall +
+              southmall_colours +
+              colours_universitperpetualhelp +
+              universitperpetualhelp_cityhalllaspinas +
+              cityhalllaspinas_maxzapote +
+              coastalmall_maxzapote +
+              shopwise_coastalmall +
+              smsucat_shopwise +
+              shellgasstationsucat_smsucat;
+            lineHelper(
+              [sta, fes, atc, sou, col, uni, cit, max, coa, sho, sms, she],
+              fes,
+              tot
+            );
+            break;
+
+          case (start === sta && end === bfr) || (start === bfr && end === sta):
+            tot =
+              starmall_festival +
+              festival_atc +
+              atc_southmall +
+              southmall_colours +
+              colours_amaia +
+              amai_bfresort;
+            lineHelper([sta, fes, atc, sou, col, ama, bfr], fes, tot);
+            break;
+
+          case (start === sta && end === ama) || (start === ama && end === sta):
+            tot =
+              starmall_festival +
+              festival_atc +
+              atc_southmall +
+              southmall_colours +
+              colours_amaia;
+            lineHelper([sta, fes, atc, sou, col, ama], fes, tot);
+            break;
+
+          case (start === sta && end === lan) || (start === lan && end === sta):
+            tot =
+              starmall_festival +
+              festival_atc +
+              atc_southmall +
+              southmall_colours +
+              jolibeemolino_colours +
+              landers_jolibeemolino;
+            lineHelper([sta, fes, atc, sou, col, jol, lan], fes, tot);
+            break;
+
+          case (start === sta && end === jol) || (start === jol && end === sta):
+            tot =
+              starmall_festival +
+              festival_atc +
+              atc_southmall +
+              southmall_colours +
+              jolibeemolino_colours;
+            lineHelper([sta, fes, atc, sou, col, jol], fes, tot);
+            break;
+
+          // From Festival Mall
+
+          case (start === fes && end === atc) || (start === atc && end === fes):
+            tot =
+              starmall_festival +
+              bfresort_startmall +
+              amai_bfresort +
+              colours_amaia +
+              southmall_colours +
+              atc_southmall;
+            lineHelper([fes, sta, bfr, ama, col, sou, atc], sta, tot);
+            break;
+
+          case (start === fes && end === sou) || (start === sou && end === fes):
+            tot =
+              starmall_festival +
+              bfresort_startmall +
+              amai_bfresort +
+              colours_amaia +
+              southmall_colours;
+            lineHelper([fes, sta, bfr, ama, col, sou], sta, tot);
+            break;
+
+          case (start === fes && end === col) || (start === col && end === fes):
+            tot =
+              starmall_festival +
+              bfresort_startmall +
+              amai_bfresort +
+              colours_amaia;
+            lineHelper([fes, sta, bfr, ama, col], sta, tot);
+            break;
+
+          case (start === fes && end === uni) || (start === uni && end === fes):
+            tot =
+              starmall_festival +
+              startmall_shellgasstationsucat +
+              shellgasstationsucat_smsucat +
+              smsucat_shopwise +
+              shopwise_coastalmall +
+              coastalmall_maxzapote +
+              cityhalllaspinas_maxzapote +
+              universitperpetualhelp_cityhalllaspinas;
+            lineHelper([fes, sta, she, sms, sho, coa, max, cit, uni], sta, tot);
+            break;
+
+          case (start === fes && end === cit) || (start === fes && end === fes):
+            tot =
+              starmall_festival +
+              startmall_shellgasstationsucat +
+              shellgasstationsucat_smsucat +
+              smsucat_shopwise +
+              shopwise_coastalmall +
+              coastalmall_maxzapote +
+              cityhalllaspinas_maxzapote;
+            lineHelper([fes, sta, she, sms, sho, coa, max, cit], sta, tot);
+            break;
+
+          case (start === fes && end === max) || (start === max && end === fes):
+            tot =
+              starmall_festival +
+              startmall_shellgasstationsucat +
+              shellgasstationsucat_smsucat +
+              smsucat_shopwise +
+              shopwise_coastalmall +
+              coastalmall_maxzapote;
+            lineHelper([fes, sta, she, sms, sho, coa, max], sta, tot);
+            break;
+
+          case (start === fes && end === coa) || (start === coa && end === fes):
+            tot =
+              festival_atc +
+              atc_southmall +
+              southmall_colours +
+              colours_universitperpetualhelp +
+              universitperpetualhelp_cityhalllaspinas +
+              cityhalllaspinas_maxzapote +
+              coastalmall_maxzapote;
+            lineHelper([fes, atc, sou, col, uni, cit, max, coa], atc, tot);
+            break;
+
+          case (start === fes && end === sho) || (start === sho && end === fes):
+            tot =
+              festival_atc +
+              atc_southmall +
+              southmall_colours +
+              colours_universitperpetualhelp +
+              universitperpetualhelp_cityhalllaspinas +
+              cityhalllaspinas_maxzapote +
+              coastalmall_maxzapote +
+              shopwise_coastalmall;
+            lineHelper([fes, atc, sou, col, uni, cit, max, coa, sho], atc, tot);
+            break;
+
+          case (start === fes && end === sms) || (start === sms && end === fes):
+            tot =
+              festival_atc +
+              atc_southmall +
+              southmall_colours +
+              colours_universitperpetualhelp +
+              universitperpetualhelp_cityhalllaspinas +
+              cityhalllaspinas_maxzapote +
+              coastalmall_maxzapote +
+              shopwise_coastalmall +
+              smsucat_shopwise;
+            lineHelper(
+              [fes, atc, sou, col, uni, cit, max, coa, sho, sms],
+              atc,
+              tot
+            );
+            break;
+
+          case (start === fes && end === she) || (start === she && end === fes):
+            tot =
+              festival_atc +
+              atc_southmall +
+              southmall_colours +
+              colours_universitperpetualhelp +
+              universitperpetualhelp_cityhalllaspinas +
+              cityhalllaspinas_maxzapote +
+              coastalmall_maxzapote +
+              shopwise_coastalmall +
+              smsucat_shopwise +
+              shellgasstationsucat_smsucat;
+            lineHelper(
+              [fes, atc, sou, col, uni, cit, max, coa, sho, sms, she],
+              atc,
+              tot
+            );
+            break;
+
+          case (start === fes && end === bfr) || (start === bfr && end === fes):
+            tot =
+              festival_atc +
+              atc_southmall +
+              southmall_colours +
+              colours_amaia +
+              amai_bfresort;
+            lineHelper([fes, atc, sou, col, ama, bfr], atc, tot);
+            break;
+
+          case (start === fes && end === ama) || (start === ama && end === fes):
+            tot = starmall_festival + bfresort_startmall + amai_bfresort;
+            lineHelper([fes, sta, bfr, ama], sta, tot);
+            break;
+
+          case (start === fes && end === lan) || (start === lan && end === fes):
+            tot =
+              festival_atc +
+              atc_southmall +
+              southmall_colours +
+              jolibeemolino_colours +
+              landers_jolibeemolino;
+            lineHelper([fes, atc, sou, col, jol, lan], atc, tot);
+            break;
+
+          case (start === fes && end === jol) || (start === jol && end === fes):
+            tot =
+              starmall_festival +
+              bfresort_startmall +
+              bfresort_landers +
+              landers_jolibeemolino;
+            lineHelper([fes, sta, bfr, lan, jol], sta, tot);
+            break;
+
+          // From ATC
+
+          case (start === atc && end === sou) || (start === sou && end === atc):
+            tot =
+              festival_atc +
+              starmall_festival +
+              bfresort_startmall +
+              amai_bfresort +
+              colours_amaia +
+              southmall_colours;
+            lineHelper([atc, fes, sta, bfr, ama, col, sou], fes, tot);
+            break;
+
+          case (start === atc && end === col) || (start === col && end === atc):
+            tot =
+              festival_atc +
+              starmall_festival +
+              bfresort_startmall +
+              amai_bfresort +
+              colours_amaia;
+            lineHelper([atc, fes, sta, bfr, ama, col], fes, tot);
+            break;
+
+          case (start === atc && end === uni) || (start === uni && end === atc):
+            tot =
+              festival_atc +
+              starmall_festival +
+              startmall_shellgasstationsucat +
+              shellgasstationsucat_smsucat +
+              smsucat_shopwise +
+              shopwise_coastalmall +
+              coastalmall_maxzapote +
+              cityhalllaspinas_maxzapote +
+              universitperpetualhelp_cityhalllaspinas;
+            lineHelper(
+              [atc, fes, sta, she, sms, sho, coa, max, cit, uni],
+              fes,
+              tot
+            );
+            break;
+
+          case (start === atc && end === cit) || (start === cit && end === atc):
+            tot =
+              festival_atc +
+              starmall_festival +
+              startmall_shellgasstationsucat +
+              shellgasstationsucat_smsucat +
+              smsucat_shopwise +
+              shopwise_coastalmall +
+              coastalmall_maxzapote +
+              cityhalllaspinas_maxzapote;
+            lineHelper([atc, fes, sta, she, sms, sho, coa, max, cit], fes, tot);
+            break;
+
+          case (start === atc && end === max) || (start === max && end === atc):
+            tot =
+              festival_atc +
+              starmall_festival +
+              startmall_shellgasstationsucat +
+              shellgasstationsucat_smsucat +
+              smsucat_shopwise +
+              shopwise_coastalmall +
+              coastalmall_maxzapote;
+            lineHelper([atc, fes, sta, she, sms, sho, coa, max], fse, tot);
+            break;
+
+          case (start === atc && end === coa) || (start === coa && end === atc):
+            tot =
+              festival_atc +
+              starmall_festival +
+              startmall_shellgasstationsucat +
+              shellgasstationsucat_smsucat +
+              smsucat_shopwise +
+              shopwise_coastalmall;
+            lineHelper([atc, fes, sta, she, sms, sho, coa], fes, tot);
+            break;
+
+          case (start === atc && end === sho) || (start === sho && end === atc):
+            tot =
+              atc_southmall +
+              southmall_colours +
+              colours_universitperpetualhelp +
+              universitperpetualhelp_cityhalllaspinas +
+              cityhalllaspinas_maxzapote +
+              coastalmall_maxzapote +
+              shopwise_coastalmall;
+            lineHelper([atc, sou, col, uni, cit, max, coa, sho], sou, tot);
+            break;
+
+          case (start === atc && end === sms) || (start === sms && end === atc):
+            tot =
+              atc_southmall +
+              southmall_colours +
+              colours_universitperpetualhelp +
+              universitperpetualhelp_cityhalllaspinas +
+              cityhalllaspinas_maxzapote +
+              coastalmall_maxzapote +
+              shopwise_coastalmall +
+              smsucat_shopwise;
+            lineHelper([atc, sou, col, uni, cit, max, coa, sho, sms], sou, tot);
+            break;
+
+          case (start === atc && end === she) || (start === she && end === atc):
+            tot =
+              atc_southmall +
+              southmall_colours +
+              colours_universitperpetualhelp +
+              universitperpetualhelp_cityhalllaspinas +
+              cityhalllaspinas_maxzapote +
+              coastalmall_maxzapote +
+              shopwise_coastalmall +
+              smsucat_shopwise +
+              shellgasstationsucat_smsucat;
+            lineHelper(
+              [atc, sou, col, uni, cit, max, coa, sho, sms, she],
+              sou,
+              tot
+            );
+            break;
+
+          case (start === atc && end === bfr) || (start === bfr && end === atc):
+            tot =
+              atc_southmall + southmall_colours + colours_amaia + amai_bfresort;
+            lineHelper([atc, sou, col, ama, bfr], sou, tot);
+            break;
+
+          case (start === atc && end === ama) || (start === ama && end === atc):
+            tot =
+              festival_atc +
+              starmall_festival +
+              bfresort_startmall +
+              amai_bfresort;
+            lineHelper([atc, fes, sta, bfr, ama], fes, tot);
+            break;
+
+          case (start === atc && end === lan) || (start === lan && end === atc):
+            tot =
+              festival_atc +
+              starmall_festival +
+              bfresort_startmall +
+              bfresort_landers;
+            lineHelper([atc, fes, sta, bfr, lan], fes, tot);
+            break;
+
+          case (start === atc && end === jol) || (start === jol && end === atc):
+            tot =
+              festival_atc +
+              starmall_festival +
+              bfresort_startmall +
+              bfresort_landers +
+              landers_jolibeemolino;
+            lineHelper([atc, fes, sta, bfr, lan, jol], fes, tot);
+            break;
+
+          // From Southmall
+
+          case (start === sou && end === col) || (start === col && end === sou):
+            tot =
+              atc_southmall +
+              festival_atc +
+              starmall_festival +
+              bfresort_startmall +
+              amai_bfresort +
+              colours_amaia;
+            lineHelper([sou, atc, fes, sta, bfr, ama, col], atc, tot);
+            break;
+
+          case (start === sou && end === uni) || (start === uni && end === sou):
+            tot =
+              atc_southmall +
+              festival_atc +
+              starmall_festival +
+              startmall_shellgasstationsucat +
+              shellgasstationsucat_smsucat +
+              smsucat_shopwise +
+              shopwise_coastalmall +
+              coastalmall_maxzapote +
+              cityhalllaspinas_maxzapote +
+              universitperpetualhelp_cityhalllaspinas;
+            lineHelper(
+              [sou, atc, fes, sta, she, sms, sho, coa, max, cit, uni],
+              atc,
+              tot
+            );
+            break;
+
+          case (start === sou && end === cit) || (start === cit && end === sou):
+            tot =
+              atc_southmall +
+              festival_atc +
+              starmall_festival +
+              startmall_shellgasstationsucat +
+              shellgasstationsucat_smsucat +
+              smsucat_shopwise +
+              shopwise_coastalmall +
+              coastalmall_maxzapote +
+              cityhalllaspinas_maxzapote;
+            lineHelper(
+              [sou, atc, fes, sta, she, sms, sho, coa, max, cit],
+              atc,
+              tot
+            );
+            break;
+
+          case (start === sou && end === max) || (start === max && end === sou):
+            tot =
+              atc_southmall +
+              starmall_festival +
+              startmall_shellgasstationsucat +
+              shellgasstationsucat_smsucat +
+              smsucat_shopwise +
+              shopwise_coastalmall +
+              coastalmall_maxzapote;
+            lineHelper([sou, atc, fes, sta, she, sms, sho, coa, max], atc, tot);
+            break;
+
+          case (start === sou && end === coa) || (start === coa && end === sou):
+            tot =
+              atc_southmall +
+              festival_atc +
+              starmall_festival +
+              startmall_shellgasstationsucat +
+              shellgasstationsucat_smsucat +
+              smsucat_shopwise +
+              shopwise_coastalmall;
+            lineHelper([sou, atc, fes, sta, she, sms, sho, coa], atc, tot);
+            break;
+
+          case (start === sou && end === sho) || (start === sho && end === sou):
+            tot =
+              southmall_colours +
+              colours_universitperpetualhelp +
+              universitperpetualhelp_cityhalllaspinas +
+              cityhalllaspinas_maxzapote +
+              coastalmall_maxzapote +
+              shopwise_coastalmall;
+            lineHelper([sou, col, uni, cit, max, coa, sho], col, tot);
+            break;
+
+          case (start === sou && end === sms) || (start === sms && end === sou):
+            tot =
+              southmall_colours +
+              colours_universitperpetualhelp +
+              universitperpetualhelp_cityhalllaspinas +
+              cityhalllaspinas_maxzapote +
+              coastalmall_maxzapote +
+              shopwise_coastalmall +
+              smsucat_shopwise;
+            lineHelper([sou, col, uni, cit, max, coa, sho, sms], col, tot);
+            break;
+
+          case (start === sou && end === she) || (start === she && end === sou):
+            tot =
+              southmall_colours +
+              colours_universitperpetualhelp +
+              universitperpetualhelp_cityhalllaspinas +
+              cityhalllaspinas_maxzapote +
+              coastalmall_maxzapote +
+              shopwise_coastalmall +
+              smsucat_shopwise +
+              shellgasstationsucat_smsucat;
+            lineHelper([sou, col, uni, cit, max, coa, sho, sms, she], col, tot);
+            break;
+
+          case (start === sou && end === bfr) || (start === bfr && end === sou):
+            tot =
+              atc_southmall +
+              festival_atc +
+              starmall_festival +
+              bfresort_startmall;
+            lineHelper([sou, atc, fes, sta, bfr], atc, tot);
+            break;
+
+          case (start === sou && end === ama) || (start === ama && end === sou):
+            tot =
+              atc_southmall +
+              festival_atc +
+              starmall_festival +
+              bfresort_startmall +
+              amai_bfresort;
+            lineHelper([sou, atc, fes, sta, bfr, ama], atc, tot);
+            break;
+
+          case (start === sou && end === lan) || (start === lan && end === sou):
+            tot =
+              atc_southmall +
+              festival_atc +
+              starmall_festival +
+              bfresort_startmall +
+              bfresort_landers;
+            lineHelper([sou, atc, fes, sta, bfr, lan], atc, tot);
+            break;
+
+          case (start === sou && end === jol) || (start === jol && end === sou):
+            tot =
+              atc_southmall +
+              festival_atc +
+              starmall_festival +
+              bfresort_startmall +
+              bfresort_landers +
+              landers_jolibeemolino;
+            lineHelper([sou, atc, fes, sta, bfr, lan, jol], atc, tot);
+            break;
+
+          // From Colours
+
+          case (start === col && end === uni) || (start === uni && end === col):
+            tot =
+              southmall_colours +
+              atc_southmall +
+              festival_atc +
+              starmall_festival +
+              startmall_shellgasstationsucat +
+              shellgasstationsucat_smsucat +
+              smsucat_shopwise +
+              shopwise_coastalmall +
+              coastalmall_maxzapote +
+              cityhalllaspinas_maxzapote +
+              universitperpetualhelp_cityhalllaspinas;
+            lineHelper(
+              [col, sou, atc, fes, sta, she, sms, sho, coa, max, cit, uni],
+              sou,
+              tot
+            );
+            break;
+
+          case (start === col && end === cit) || (start === cit && end === col):
+            tot =
+              southmall_colours +
+              atc_southmall +
+              festival_atc +
+              starmall_festival +
+              startmall_shellgasstationsucat +
+              shellgasstationsucat_smsucat +
+              smsucat_shopwise +
+              shopwise_coastalmall +
+              coastalmall_maxzapote +
+              cityhalllaspinas_maxzapote;
+            lineHelper(
+              [col, sou, atc, fes, sta, she, sms, sho, coa, max, cit],
+              sou,
+              tot
+            );
+            break;
+
+          case (start === col && end === max) || (start === max && end === col):
+            tot =
+              southmall_colours +
+              atc_southmall +
+              starmall_festival +
+              startmall_shellgasstationsucat +
+              shellgasstationsucat_smsucat +
+              smsucat_shopwise +
+              shopwise_coastalmall +
+              coastalmall_maxzapote;
+            lineHelper(
+              [col, sou, atc, fes, sta, she, sms, sho, coa, max],
+              sou,
+              tot
+            );
+            break;
+
+          case (start === col && end === coa) || (start === coa && end === col):
+            tot =
+              southmall_colours +
+              atc_southmall +
+              festival_atc +
+              starmall_festival +
+              startmall_shellgasstationsucat +
+              shellgasstationsucat_smsucat +
+              smsucat_shopwise +
+              shopwise_coastalmall;
+            lineHelper([col, sou, atc, fes, sta, she, sms, sho, coa], sou, tot);
+            break;
+
+          case (start === col && end === sho) || (start === sho && end === col):
+            tot =
+              southmall_colours +
+              atc_southmall +
+              festival_atc +
+              starmall_festival +
+              startmall_shellgasstationsucat +
+              shellgasstationsucat_smsucat +
+              smsucat_shopwise;
+            lineHelper([col, sou, atc, fes, sta, she, sms, sho], sou, tot);
+            break;
+
+          case (start === col && end === sms) || (start === sms && end === col):
+            tot =
+              colours_universitperpetualhelp +
+              universitperpetualhelp_cityhalllaspinas +
+              cityhalllaspinas_maxzapote +
+              coastalmall_maxzapote +
+              shopwise_coastalmall +
+              smsucat_shopwise;
+            lineHelper([col, uni, cit, max, coa, sho, sms], uni, tot);
+            break;
+
+          case (start === col && end === she) || (start === she && end === col):
+            tot =
+              colours_universitperpetualhelp +
+              universitperpetualhelp_cityhalllaspinas +
+              cityhalllaspinas_maxzapote +
+              coastalmall_maxzapote +
+              shopwise_coastalmall +
+              smsucat_shopwise +
+              shellgasstationsucat_smsucat;
+            lineHelper([col, uni, cit, max, coa, sho, sms, she], uni, tot);
+            break;
+
+          case (start === col && end === bfr) || (start === bfr && end === col):
+            tot =
+              southmall_colours +
+              atc_southmall +
+              festival_atc +
+              starmall_festival +
+              bfresort_startmall;
+            lineHelper([col, sou, atc, fes, sta, bfr], sou, tot);
+            tot =
+              jolibeemolino_colours + landers_jolibeemolino + bfresort_landers;
+            lineHelper([col, jol, lan, bfr], jol, tot);
+            break;
+
+          case (start === col && end === ama) || (start === ama && end === col):
+            tot =
+              southmall_colours +
+              atc_southmall +
+              festival_atc +
+              starmall_festival +
+              bfresort_startmall +
+              amai_bfresort;
+            lineHelper([col, sou, atc, fes, sta, bfr, ama], sou, tot);
+            break;
+
+          case (start === col && end === lan) || (start === lan && end === col):
+            tot = colours_amaia + amai_bfresort + bfresort_landers;
+            lineHelper([col, ama, bfr, lan], ama, tot);
+            break;
+
+          case (start === col && end === jol) || (start === jol && end === col):
+            tot =
+              southmall_colours +
+              atc_southmall +
+              festival_atc +
+              starmall_festival +
+              bfresort_startmall +
+              bfresort_landers +
+              landers_jolibeemolino;
+            lineHelper([col, sou, atc, fes, sta, bfr, lan, jol], sou, tot);
+            break;
+
+          // From PERPS
+          case (start === uni && end === cit) || (start === cit && end === uni):
+            tot =
+              colours_universitperpetualhelp +
+              southmall_colours +
+              atc_southmall +
+              festival_atc +
+              starmall_festival +
+              startmall_shellgasstationsucat +
+              shellgasstationsucat_smsucat +
+              smsucat_shopwise +
+              shopwise_coastalmall +
+              coastalmall_maxzapote +
+              cityhalllaspinas_maxzapote;
+            lineHelper(
+              [uni, col, sou, atc, fes, sta, she, sms, sho, coa, max, cit],
+              col,
+              tot
+            );
+            break;
+
+          case (start === uni && end === max) || (start === max && end === uni):
+            tot =
+              colours_universitperpetualhelp +
+              southmall_colours +
+              atc_southmall +
+              festival_atc +
+              starmall_festival +
+              startmall_shellgasstationsucat +
+              shellgasstationsucat_smsucat +
+              smsucat_shopwise +
+              shopwise_coastalmall +
+              coastalmall_maxzapote;
+            lineHelper(
+              [uni, col, sou, atc, fes, sta, she, sms, sho, coa, max],
+              col,
+              tot
+            );
+            break;
+
+          case (start === uni && end === coa) || (start === coa && end === uni):
+            tot =
+              colours_universitperpetualhelp +
+              southmall_colours +
+              atc_southmall +
+              festival_atc +
+              starmall_festival +
+              startmall_shellgasstationsucat +
+              shellgasstationsucat_smsucat +
+              smsucat_shopwise +
+              shopwise_coastalmall;
+            lineHelper(
+              [uni, col, sou, atc, fes, sta, she, sms, sho, coa],
+              col,
+              tot
+            );
+            break;
+
+          case (start === uni && end === sho) || (start === sho && end === uni):
+            tot =
+              colours_universitperpetualhelp +
+              southmall_colours +
+              atc_southmall +
+              festival_atc +
+              starmall_festival +
+              startmall_shellgasstationsucat +
+              shellgasstationsucat_smsucat +
+              smsucat_shopwise;
+            lineHelper([uni, col, sou, atc, fes, sta, she, sms, sho], col, tot);
+            break;
+
+          case (start === uni && end === sms) || (start === sms && end === uni):
+            tot =
+              colours_universitperpetualhelp +
+              southmall_colours +
+              atc_southmall +
+              festival_atc +
+              starmall_festival +
+              startmall_shellgasstationsucat +
+              shellgasstationsucat_smsucat;
+            lineHelper([uni, col, sou, atc, fes, sta, she, sms], col, tot);
+            break;
+
+          case (start === uni && end === she) || (start === she && end === uni):
+            tot =
+              universitperpetualhelp_cityhalllaspinas +
+              cityhalllaspinas_maxzapote +
+              coastalmall_maxzapote +
+              shopwise_coastalmall +
+              smsucat_shopwise +
+              shellgasstationsucat_smsucat;
+            lineHelper([uni, cit, max, coa, sho, sms, she], cit, tot);
+            break;
+
+          case (start === uni && end === bfr) || (start === bfr && end === uni):
+            tot =
+              universitperpetualhelp_cityhalllaspinas +
+              cityhalllaspinas_maxzapote +
+              coastalmall_maxzapote +
+              shopwise_coastalmall +
+              smsucat_shopwise +
+              shellgasstationsucat_smsucat +
+              startmall_shellgasstationsucat +
+              bfresort_startmall;
+            lineHelper([uni, cit, max, coa, sho, sms, she, sta, bfr], cit, tot);
+            break;
+
+          case (start === uni && end === ama) || (start === ama && end === uni):
+            tot =
+              universitperpetualhelp_cityhalllaspinas +
+              cityhalllaspinas_maxzapote +
+              coastalmall_maxzapote +
+              shopwise_coastalmall +
+              smsucat_shopwise +
+              shellgasstationsucat_smsucat +
+              startmall_shellgasstationsucat +
+              bfresort_startmall +
+              amai_bfresort;
+            lineHelper(
+              [uni, cit, max, coa, sho, sms, she, sta, bfr, ama],
+              cit,
+              tot
+            );
+            break;
+
+          case (start === uni && end === lan) || (start === lan && end === uni):
+            tot =
+              universitperpetualhelp_cityhalllaspinas +
+              cityhalllaspinas_maxzapote +
+              coastalmall_maxzapote +
+              shopwise_coastalmall +
+              smsucat_shopwise +
+              shellgasstationsucat_smsucat +
+              startmall_shellgasstationsucat +
+              bfresort_startmall +
+              bfresort_landers;
+            lineHelper(
+              [uni, cit, max, coa, sho, sms, she, sta, bfr, lan],
+              cit,
+              tot
+            );
+            break;
+
+          case (start === uni && end === jol) || (start === jol && end === uni):
+            tot =
+              universitperpetualhelp_cityhalllaspinas +
+              cityhalllaspinas_maxzapote +
+              coastalmall_maxzapote +
+              shopwise_coastalmall +
+              smsucat_shopwise +
+              shellgasstationsucat_smsucat +
+              startmall_shellgasstationsucat +
+              bfresort_startmall +
+              bfresort_landers +
+              landers_jolibeemolino;
+            lineHelper(
+              [uni, cit, max, coa, sho, sms, she, sta, bfr, lan, jol],
+              cit,
+              tot
+            );
+            break;
+
+          // From City Hall Las Pinas
+
+          case (start === cit && end === max) || (start === max && end === cit):
+            tot =
+              universitperpetualhelp_cityhalllaspinas +
+              colours_universitperpetualhelp +
+              southmall_colours +
+              atc_southmall +
+              festival_atc +
+              starmall_festival +
+              startmall_shellgasstationsucat +
+              shellgasstationsucat_smsucat +
+              smsucat_shopwise +
+              shopwise_coastalmall +
+              coastalmall_maxzapote;
+            lineHelper(
+              [cit, uni, col, sou, atc, fes, sta, she, sms, sho, coa, max],
+              uni,
+              tot
+            );
+            break;
+
+          case (start === cit && end === coa) || (start === coa && end === cit):
+            tot =
+              universitperpetualhelp_cityhalllaspinas +
+              colours_universitperpetualhelp +
+              southmall_colours +
+              atc_southmall +
+              festival_atc +
+              starmall_festival +
+              startmall_shellgasstationsucat +
+              shellgasstationsucat_smsucat +
+              smsucat_shopwise +
+              shopwise_coastalmall;
+            lineHelper(
+              [cit, uni, col, sou, atc, fes, sta, she, sms, sho, coa],
+              uni,
+              tot
+            );
+            break;
+
+          case (start === cit && end === sho) || (start === sho && end === cit):
+            tot =
+              universitperpetualhelp_cityhalllaspinas +
+              colours_universitperpetualhelp +
+              southmall_colours +
+              atc_southmall +
+              festival_atc +
+              starmall_festival +
+              startmall_shellgasstationsucat +
+              shellgasstationsucat_smsucat +
+              smsucat_shopwise;
+            lineHelper(
+              [cit, uni, col, sou, atc, fes, sta, she, sms, sho],
+              uni,
+              tot
+            );
+            break;
+
+          case (start === cit && end === sms) || (start === sms && end === cit):
+            tot =
+              universitperpetualhelp_cityhalllaspinas +
+              colours_universitperpetualhelp +
+              southmall_colours +
+              atc_southmall +
+              festival_atc +
+              starmall_festival +
+              startmall_shellgasstationsucat +
+              shellgasstationsucat_smsucat;
+            lineHelper([cit, uni, col, sou, atc, fes, sta, she, sms], uni, tot);
+            break;
+
+          case (start === cit && end === she) || (start === she && end === cit):
+            tot =
+              cityhalllaspinas_maxzapote +
+              coastalmall_maxzapote +
+              shopwise_coastalmall +
+              smsucat_shopwise +
+              shellgasstationsucat_smsucat;
+            lineHelper([cit, max, coa, sho, sms, she], max, tot);
+            break;
+
+          case (start === cit && end === bfr) || (start === bfr && end === cit):
+            tot =
+              cityhalllaspinas_maxzapote +
+              coastalmall_maxzapote +
+              shopwise_coastalmall +
+              smsucat_shopwise +
+              shellgasstationsucat_smsucat +
+              startmall_shellgasstationsucat +
+              bfresort_startmall;
+            lineHelper([cit, max, coa, sho, sms, she, sta, bfr], max, tot);
+            break;
+
+          case (start === cit && end === ama) || (start === ama && end === cit):
+            tot =
+              cityhalllaspinas_maxzapote +
+              coastalmall_maxzapote +
+              shopwise_coastalmall +
+              smsucat_shopwise +
+              shellgasstationsucat_smsucat +
+              startmall_shellgasstationsucat +
+              bfresort_startmall +
+              amai_bfresort;
+            lineHelper([cit, max, coa, sho, sms, she, sta, bfr, ama], max, tot);
+            break;
+
+          case (start === cit && end === lan) || (start === lan && end === cit):
+            tot =
+              cityhalllaspinas_maxzapote +
+              coastalmall_maxzapote +
+              shopwise_coastalmall +
+              smsucat_shopwise +
+              shellgasstationsucat_smsucat +
+              startmall_shellgasstationsucat +
+              bfresort_startmall +
+              bfresort_landers;
+            lineHelper([cit, max, coa, sho, sms, she, sta, bfr, lan], max, tot);
+            break;
+
+          case (start === cit && end === jol) || (start === jol && end === cit):
+            tot =
+              cityhalllaspinas_maxzapote +
+              coastalmall_maxzapote +
+              shopwise_coastalmall +
+              smsucat_shopwise +
+              shellgasstationsucat_smsucat +
+              startmall_shellgasstationsucat +
+              bfresort_startmall +
+              bfresort_landers +
+              landers_jolibeemolino;
+            lineHelper(
+              [cit, max, coa, sho, sms, she, sta, bfr, lan, jol],
+              max,
+              tot
+            );
+            break;
+
+          // From Max Resto
+
+          case (start === max && end === coa) || (start === coa && end === max):
+            tot =
+              cityhalllaspinas_maxzapote +
+              universitperpetualhelp_cityhalllaspinas +
+              colours_universitperpetualhelp +
+              southmall_colours +
+              atc_southmall +
+              festival_atc +
+              starmall_festival +
+              startmall_shellgasstationsucat +
+              shellgasstationsucat_smsucat +
+              smsucat_shopwise +
+              shopwise_coastalmall;
+            lineHelper(
+              [max, cit, uni, col, sou, atc, fes, sta, she, sms, sho, coa],
+              cit,
+              tot
+            );
+            break;
+
+          case (start === max && end === sho) || (start === sho && end === max):
+            tot =
+              cityhalllaspinas_maxzapote +
+              universitperpetualhelp_cityhalllaspinas +
+              colours_universitperpetualhelp +
+              southmall_colours +
+              atc_southmall +
+              festival_atc +
+              starmall_festival +
+              startmall_shellgasstationsucat +
+              shellgasstationsucat_smsucat +
+              smsucat_shopwise;
+            lineHelper(
+              [max, cit, uni, col, sou, atc, fes, sta, she, sms, sho],
+              cit,
+              tot
+            );
+            break;
+
+          case (start === max && end === sms) || (start === sms && end === max):
+            tot =
+              cityhalllaspinas_maxzapote +
+              universitperpetualhelp_cityhalllaspinas +
+              colours_universitperpetualhelp +
+              southmall_colours +
+              atc_southmall +
+              festival_atc +
+              starmall_festival +
+              startmall_shellgasstationsucat +
+              shellgasstationsucat_smsucat;
+            lineHelper(
+              [max, cit, uni, col, sou, atc, fes, sta, she, sms],
+              cit,
+              tot
+            );
+            break;
+
+          case (start === max && end === she) || (start === she && end === max):
+            tot =
+              cityhalllaspinas_maxzapote +
+              universitperpetualhelp_cityhalllaspinas +
+              colours_universitperpetualhelp +
+              southmall_colours +
+              atc_southmall +
+              festival_atc +
+              starmall_festival +
+              startmall_shellgasstationsucat;
+            lineHelper([max, cit, uni, col, sou, atc, fes, sta, she], cit, tot);
+            break;
+
+          case (start === max && end === bfr) || (start === bfr && end === max):
+            tot =
+              coastalmall_maxzapote +
+              shopwise_coastalmall +
+              smsucat_shopwise +
+              shellgasstationsucat_smsucat +
+              startmall_shellgasstationsucat +
+              bfresort_startmall;
+            lineHelper([max, coa, sho, sms, she, sta, bfr], coa, tot);
+            break;
+
+          case (start === max && end === ama) || (start === ama && end === max):
+            tot =
+              coastalmall_maxzapote +
+              shopwise_coastalmall +
+              smsucat_shopwise +
+              shellgasstationsucat_smsucat +
+              startmall_shellgasstationsucat +
+              bfresort_startmall +
+              amai_bfresort;
+            lineHelper([max, coa, sho, sms, she, sta, bfr, ama], coa, tot);
+            break;
+
+          case (start === max && end === lan) || (start === lan && end === max):
+            tot =
+              coastalmall_maxzapote +
+              shopwise_coastalmall +
+              smsucat_shopwise +
+              shellgasstationsucat_smsucat +
+              startmall_shellgasstationsucat +
+              bfresort_startmall +
+              bfresort_landers;
+            lineHelper([max, coa, sho, sms, she, sta, bfr, lan], coa, tot);
+            break;
+
+          case (start === max && end === jol) || (start === jol && end === max):
+            tot =
+              coastalmall_maxzapote +
+              shopwise_coastalmall +
+              smsucat_shopwise +
+              shellgasstationsucat_smsucat +
+              startmall_shellgasstationsucat +
+              bfresort_startmall +
+              bfresort_landers +
+              landers_jolibeemolino;
+            lineHelper([max, coa, sho, sms, she, sta, bfr, lan, jol], coa, tot);
+            break;
+
+          // From Coastal Mall
+          case (start === coa && end === sho) || (start === sho && end === coa):
+            tot =
+              coastalmall_maxzapote +
+              cityhalllaspinas_maxzapote +
+              universitperpetualhelp_cityhalllaspinas +
+              colours_universitperpetualhelp +
+              southmall_colours +
+              atc_southmall +
+              festival_atc +
+              starmall_festival +
+              startmall_shellgasstationsucat +
+              shellgasstationsucat_smsucat +
+              smsucat_shopwise;
+            lineHelper(
+              [coa, max, cit, uni, col, sou, atc, fes, sta, she, sms, sho],
+              max,
+              tot
+            );
+            break;
+
+          case (start === coa && end === sms) || (start === sms && end === coa):
+            tot =
+              coastalmall_maxzapote +
+              cityhalllaspinas_maxzapote +
+              universitperpetualhelp_cityhalllaspinas +
+              colours_universitperpetualhelp +
+              southmall_colours +
+              atc_southmall +
+              festival_atc +
+              starmall_festival +
+              startmall_shellgasstationsucat +
+              shellgasstationsucat_smsucat;
+            lineHelper(
+              [coa, max, cit, uni, col, sou, atc, fes, sta, she, sms],
+              max,
+              tot
+            );
+            break;
+
+          case (start === coa && end === she) || (start === she && end === coa):
+            tot =
+              coastalmall_maxzapote +
+              cityhalllaspinas_maxzapote +
+              universitperpetualhelp_cityhalllaspinas +
+              colours_universitperpetualhelp +
+              southmall_colours +
+              atc_southmall +
+              festival_atc +
+              starmall_festival +
+              startmall_shellgasstationsucat;
+            lineHelper(
+              [coa, max, cit, uni, col, sou, atc, fes, sta, she],
+              max,
+              tot
+            );
+            break;
+
+          case (start === coa && end === bfr) || (start === bfr && end === coa):
+            tot =
+              shopwise_coastalmall +
+              smsucat_shopwise +
+              shellgasstationsucat_smsucat +
+              startmall_shellgasstationsucat +
+              bfresort_startmall;
+            lineHelper([coa, sho, sms, she, sta, bfr], sho, tot);
+            break;
+
+          case (start === coa && end === ama) || (start === ama && end === coa):
+            tot =
+              shopwise_coastalmall +
+              smsucat_shopwise +
+              shellgasstationsucat_smsucat +
+              startmall_shellgasstationsucat +
+              bfresort_startmall +
+              amai_bfresort;
+            lineHelper([coa, sho, sms, she, sta, bfr, ama], sho, tot);
+            break;
+
+          case (start === coa && end === lan) || (start === lan && end === coa):
+            tot =
+              shopwise_coastalmall +
+              smsucat_shopwise +
+              shellgasstationsucat_smsucat +
+              startmall_shellgasstationsucat +
+              bfresort_startmall +
+              bfresort_landers;
+            lineHelper([coa, sho, sms, she, sta, bfr, lan], sho, tot);
+            break;
+
+          case (start === coa && end === jol) || (start === jol && end === coa):
+            tot =
+              shopwise_coastalmall +
+              smsucat_shopwise +
+              shellgasstationsucat_smsucat +
+              startmall_shellgasstationsucat +
+              bfresort_startmall +
+              bfresort_landers +
+              landers_jolibeemolino;
+            lineHelper([coa, sho, sms, she, sta, bfr, lan, jol], sho, tot);
+            break;
+
+          // From Shopwise
+          case (start === sho && end === sms) || (start === sms && end === sho):
+            tot =
+              shopwise_coastalmall +
+              coastalmall_maxzapote +
+              cityhalllaspinas_maxzapote +
+              universitperpetualhelp_cityhalllaspinas +
+              colours_universitperpetualhelp +
+              southmall_colours +
+              atc_southmall +
+              festival_atc +
+              starmall_festival +
+              startmall_shellgasstationsucat +
+              shellgasstationsucat_smsucat;
+            lineHelper(
+              [sho, coa, max, cit, uni, col, sou, atc, fes, sta, she, sms],
+              coa,
+              tot
+            );
+            break;
+
+          case (start === sho && end === she) || (start === she && end === sho):
+            tot =
+              shopwise_coastalmall +
+              coastalmall_maxzapote +
+              cityhalllaspinas_maxzapote +
+              universitperpetualhelp_cityhalllaspinas +
+              colours_universitperpetualhelp +
+              southmall_colours +
+              atc_southmall +
+              festival_atc +
+              starmall_festival +
+              startmall_shellgasstationsucat;
+            lineHelper(
+              [sho, coa, max, cit, uni, col, sou, atc, fes, sta, she],
+              coa,
+              tot
+            );
+            break;
+
+          case (start === sho && end === bfr) || (start === bfr && end === sho):
+            tot =
+              shopwise_coastalmall +
+              coastalmall_maxzapote +
+              cityhalllaspinas_maxzapote +
+              universitperpetualhelp_cityhalllaspinas +
+              colours_universitperpetualhelp +
+              colours_amaia +
+              amai_bfresort;
+            lineHelper([sho, coa, max, cit, uni, col, ama, bfr], coa, tot);
+            break;
+
+          case (start === sho && end === ama) || (start === ama && end === sho):
+            tot =
+              smsucat_shopwise +
+              shellgasstationsucat_smsucat +
+              startmall_shellgasstationsucat +
+              bfresort_startmall +
+              amai_bfresort;
+            lineHelper([sho, sms, she, sta, bfr, ama], sms, tot);
+            break;
+
+          case (start === sho && end === lan) || (start === lan && end === sho):
+            tot =
+              shopwise_coastalmall +
+              coastalmall_maxzapote +
+              cityhalllaspinas_maxzapote +
+              universitperpetualhelp_cityhalllaspinas +
+              colours_universitperpetualhelp +
+              jolibeemolino_colours +
+              landers_jolibeemolino;
+            lineHelper([sho, coa, max, cit, uni, col, jol, lan], coa, tot);
+            break;
+
+          case (start === sho && end === jol) || (start === jol && end === sho):
+            tot =
+              smsucat_shopwise +
+              shellgasstationsucat_smsucat +
+              startmall_shellgasstationsucat +
+              bfresort_startmall +
+              bfresort_landers +
+              landers_jolibeemolino;
+            lineHelper([sho, sms, she, sta, bfr, lan, jol], sms, tot);
+            break;
+
+          // From SM Sucat
+
+          case (start === sms && end === she) || (start === she && end === sms):
+            tot =
+              smsucat_shopwise +
+              shopwise_coastalmall +
+              coastalmall_maxzapote +
+              cityhalllaspinas_maxzapote +
+              universitperpetualhelp_cityhalllaspinas +
+              colours_universitperpetualhelp +
+              southmall_colours +
+              atc_southmall +
+              festival_atc +
+              starmall_festival +
+              startmall_shellgasstationsucat;
+            lineHelper(
+              [sms, sho, coa, max, cit, uni, col, sou, atc, fes, sta, she],
+              sho,
+              tot
+            );
+            break;
+
+          case (start === sms && end === bfr) || (start === bfr && end === sms):
+            tot =
+              smsucat_shopwise +
+              shopwise_coastalmall +
+              coastalmall_maxzapote +
+              cityhalllaspinas_maxzapote +
+              universitperpetualhelp_cityhalllaspinas +
+              colours_universitperpetualhelp +
+              colours_amaia +
+              amai_bfresort;
+            lineHelper([sms, sho, coa, max, cit, uni, col, ama, bfr], sho, tot);
+            break;
+
+          case (start === sms && end === ama) || (start === ama && end === sms):
+            tot =
+              smsucat_shopwise +
+              shopwise_coastalmall +
+              coastalmall_maxzapote +
+              cityhalllaspinas_maxzapote +
+              universitperpetualhelp_cityhalllaspinas +
+              colours_universitperpetualhelp +
+              colours_amaia;
+            lineHelper([sms, sho, coa, max, cit, uni, col, ama], sho, tot);
+            break;
+
+          case (start === sms && end === lan) || (start === lan && end === sms):
+            tot =
+              smsucat_shopwise +
+              shopwise_coastalmall +
+              coastalmall_maxzapote +
+              cityhalllaspinas_maxzapote +
+              universitperpetualhelp_cityhalllaspinas +
+              colours_universitperpetualhelp +
+              jolibeemolino_colours +
+              landers_jolibeemolino;
+            lineHelper([sms, sho, coa, max, cit, uni, col, jol, lan], sho, tot);
+            break;
+
+          case (start === sms && end === jol) || (start === jol && end === sms):
+            tot =
+              smsucat_shopwise +
+              shopwise_coastalmall +
+              coastalmall_maxzapote +
+              cityhalllaspinas_maxzapote +
+              universitperpetualhelp_cityhalllaspinas +
+              colours_universitperpetualhelp +
+              jolibeemolino_colours;
+            lineHelper([sms, sho, coa, max, cit, uni, col, jol], sho, tot);
+            break;
+
+          // From Shell
+
+          case (start === she && end === bfr) || (start === bfr && end === she):
+            tot =
+              shellgasstationsucat_smsucat +
+              smsucat_shopwise +
+              shopwise_coastalmall +
+              coastalmall_maxzapote +
+              cityhalllaspinas_maxzapote +
+              universitperpetualhelp_cityhalllaspinas +
+              colours_universitperpetualhelp +
+              colours_amaia +
+              amai_bfresort;
+            lineHelper(
+              [she, sms, sho, coa, max, cit, uni, col, ama, bfr],
+              sms,
+              tot
+            );
+            break;
+
+          case (start === she && end === ama) || (start === ama && end === she):
+            tot =
+              shellgasstationsucat_smsucat +
+              smsucat_shopwise +
+              shopwise_coastalmall +
+              coastalmall_maxzapote +
+              cityhalllaspinas_maxzapote +
+              universitperpetualhelp_cityhalllaspinas +
+              colours_universitperpetualhelp +
+              colours_amaia;
+            lineHelper([she, sms, sho, coa, max, cit, uni, col, ama], sms, tot);
+            break;
+
+          case (start === she && end === lan) || (start === lan && end === she):
+            tot =
+              shellgasstationsucat_smsucat +
+              smsucat_shopwise +
+              shopwise_coastalmall +
+              coastalmall_maxzapote +
+              cityhalllaspinas_maxzapote +
+              universitperpetualhelp_cityhalllaspinas +
+              colours_universitperpetualhelp +
+              jolibeemolino_colours +
+              landers_jolibeemolino;
+            lineHelper(
+              [she, sms, sho, coa, max, cit, uni, col, jol, lan],
+              sms,
+              tot
+            );
+            break;
+
+          case (start === she && end === jol) || (start === jol && end === she):
+            tot =
+              shellgasstationsucat_smsucat +
+              smsucat_shopwise +
+              shopwise_coastalmall +
+              coastalmall_maxzapote +
+              cityhalllaspinas_maxzapote +
+              universitperpetualhelp_cityhalllaspinas +
+              colours_universitperpetualhelp +
+              jolibeemolino_colours;
+            lineHelper([she, sms, sho, coa, max, cit, uni, col, jol], sms, tot);
+            break;
+
+          // From BFR
+          case (start === bfr && end === ama) || (start === ama && end === bfr):
+            tot =
+              bfresort_startmall +
+              starmall_festival +
+              festival_atc +
+              atc_southmall +
+              southmall_colours +
+              colours_amaia;
+            lineHelper([bfr, sta, fes, atc, sou, col, ama], sta, tot);
+            break;
+
+          case (start === bfr && end === lan) || (start === lan && end === bfr):
+            tot =
+              amai_bfresort +
+              colours_amaia +
+              jolibeemolino_colours +
+              landers_jolibeemolino;
+            lineHelper([bfr, ama, col, jol, lan], ama, tot);
+            break;
+
+          case (start === bfr && end === jol) || (start === jol && end === bfr):
+            tot = amai_bfresort + colours_amaia + jolibeemolino_colours;
+            lineHelper([bfr, ama, col, jol], ama, tot);
+            break;
+
+          // From Ama
+
+          case (start === ama && end === lan) || (start === lan && end === ama):
+            tot = colours_amaia + jolibeemolino_colours + landers_jolibeemolino;
+            lineHelper([ama, col, jol, lan], col, tot);
+            break;
+
+          case (start === ama && end === jol) || (start === jol && end === ama):
+            tot = amai_bfresort + bfresort_landers + landers_jolibeemolino;
+            lineHelper([ama, bfr, lan, jol], bfr, tot);
+            break;
+
+          // From Landers
+          case (start === lan && end === jol) || (start === jol && end === lan):
+            tot =
+              bfresort_landers +
+              amai_bfresort +
+              colours_amaia +
+              jolibeemolino_colours;
+            lineHelper([lan, bfr, ama, col, jol], bfr, tot);
+            break;
+
+          default:
+          // I can define some default behaviour here, if no other case matches
+        }
+        function lineHelper(stops, via, tot) {
+          clr = GenerateColor();
+          for (let i = 0; i < stops.length - 1; i++) {
+            console.log(stops[i]);
+            createLines(stops[i], stops[i + 1], clr);
+          }
+          CalculatesOtherRoutes(start, via, tot, clr);
+        }
+        clrCounter = 0;
+      }
+      // this is called if i want to create a line
+      function createLines(place1, place2, colorline) {
+        let thickness = 3;
+        let x1 = nodes[place1].x;
+        let y1 = nodes[place1].y;
+        let x2 = nodes[place2].x;
+        let y2 = nodes[place2].y;
+        let midX = (x1 + x2) / 2;
+        let midY = (y1 + y2) / 2;
+        svg
+          .append("line")
+          .style("stroke", colorline)
+          .style("stroke-width", thickness) // thickness of line
+          .attr("x1", x1)
+          .attr("y1", y1)
+          .attr("x2", x2)
+          .attr("y2", y2);
+      }
+      var clrCounter = 0;
+      function GenerateColor() {
+        let colorIndicator = "blue"; // as default
+        if (clrCounter == 0) {
+          colorIndicator = "blue";
+        } else if (clrCounter == 1) {
+          colorIndicator = "green";
+        } else if (clrCounter == 2) {
+          colorIndicator = "purple";
+        } else if (clrCounter == 3) {
+          colorIndicator = "violet";
+        } else if (clrCounter == 3) {
+          colorIndicator = "orange";
+        } else if (clrCounter == 3) {
+          colorIndicator = "yellow";
+        }
+        clrCounter++;
+        if (clrCounter > 5) {
+          clrCounter = 0;
+        }
+        return colorIndicator;
+      }
+      function CalculatesOtherRoutes(start, via, totRoute, txtclr) {
+        document.getElementById("other_total_distance").innerHTML +=
+          "<span style='color:" +
+          txtclr +
+          "'>" +
+          start +
+          " via " +
+          via +
+          ": <span style='font-weight:bolder; color:black'>" +
+          totRoute +
+          "  km </span> </span><br>";
+      }
+
+      // short routes algorithm
+      // determines the short route and this is the default.
+      // in the UI, the route (color:red) is the short route
+      function shortestPath(edges, numVertices, startVertex) {
+        RefrshSgv();
+
+        let done = new Array(numVertices);
+        done[startVertex] = true;
+        let pathLengths = new Array(numVertices);
+        let predecessors = new Array(numVertices);
+        for (let i = 0; i < numVertices; i++) {
+          pathLengths[i] = edges[startVertex][i];
+          if (edges[startVertex][i] != INFINITY) {
+            predecessors[i] = startVertex;
+          }
+        }
+        pathLengths[startVertex] = 0;
+        for (let i = 0; i < numVertices - 1; i++) {
+          let min = INFINITY;
+          for (let j = 0; j < numVertices; j++) {
+            if (!done[j] && pathLengths[j] < min) {
+              min = pathLengths[j];
+              var k = j;
+            }
+          }
+          done[k] = true;
+          for (let j = 0; j < numVertices; j++) {
+            if (!done[j]) {
+              let possiblySmallerLength = pathLengths[k] + edges[k][j];
+              if (possiblySmallerLength < pathLengths[j]) {
+                pathLengths[j] = possiblySmallerLength;
+                predecessors[j] = k;
+              }
+            }
+          }
+        }
+        return {
+          startVertex: startVertex,
+          pathLengths: pathLengths,
+          predecessors: predecessors,
+        };
+      }
+
+      // show all lines and distance
+      function showAllLines() {
+        for (let place in connections) {
+          // console.log("PLACE: " + place);
+          for (let connectToPlace in connections[place]) {
+            //  console.log("nodes[connectToPlace]: " + connectToPlace); 7
+            //  console.log("connections[place][connectToPlace]: " +connections[place][connectToPlace]);
+            //  console.log("place: " + place);
+            // let x1 = nodes[place].x;
+            // let y1 = nodes[place].y;
+            // let x2 = nodes[connectToPlace].x;
+            // let y2 = nodes[connectToPlace].y;
+            // let midX = (x1 + x2) / 2;
+            // let midY = (y1 + y2) / 2;
+            // svg
+            //   .append("text")
+            //   .attr("x", midX)
+            //   .attr("y", midY)
+            //   .text(connections[place][connectToPlace]) // the distance (numbers)
+            //   .style("stroke", "green")
+            //   .style("font-size", "20px")
+            //   .style("color", "black");
+            // svg
+            //   .append("line")
+            //   .style("stroke", "gray")
+            //   .style("stroke-width", 2) // thickness of line
+            //   .attr("x1", x1)
+            //   .attr("y1", y1)
+            //   .attr("x2", x2)
+            //   .attr("y2", y2);
+          }
+        }
+      }
+
+      // display tooltip (start location tooltip)
+      function showStartToolTip() {
+        let locName =
+          "Start Location: <br>" + start.options[start.selectedIndex].value;
+        let tooltip = d3
+          .select("body")
+          .append("div")
+          .attr("class", "tooltip")
+          .style("opacity", 0);
+
+        svg
+          .selectAll("circle.start")
+          .on("mouseover", function (d, i) {
+            tooltip.transition().duration(200).style("opacity", 1);
+            tooltip
+              .html(locName)
+              .style("left", d3.event.pageX + "px")
+              .style("top", d3.event.pageY + "px");
+          })
+          .on("mouseout", function (d) {
+            tooltip.transition().duration(500).style("opacity", 0);
+          });
+      }
+
+      // display tooltip (end location tooltip)
+      function showEndToolTip() {
+        let locName =
+          "Destination: <br>" + end.options[end.selectedIndex].value;
+        let tooltip = d3
+          .select("body")
+          .append("div")
+          .attr("class", "tooltip")
+          .style("opacity", 0);
+
+        svg
+          .selectAll("circle.end")
+          .on("mouseover", function (d, i) {
+            tooltip.transition().duration(200).style("opacity", 1);
+            tooltip
+              .html(locName)
+              .style("left", d3.event.pageX + "px")
+              .style("top", d3.event.pageY + "px");
+          })
+          .on("mouseout", function (d) {
+            tooltip.transition().duration(500).style("opacity", 0);
+          });
+      }
+
+      // clear / reset
+      function reset() {
+        svg.selectAll("*").remove();
+        svg
+          .selectAll("circle")
+          .data(Object.entries(nodes))
+          .enter()
+          .append("circle")
+          .attr("class", "node")
+          .attr("r", 20)
+          .attr("cx", (d) => d[1].x)
+          .attr("cy", (d) => d[1].y);
+        svg
+          .selectAll("text")
+          .data(Object.entries(nodes))
+          .enter()
+          .append("text")
+          .attr("x", (d) => d[1].x - 10)
+          .attr("y", (d) => d[1].y + 5)
+          .text((d) => d[0]);
+        document.getElementById("total_distance").innerHTML =
+          "<span style='color:red; font-weight: bolder'>" +
+          "Shortest Route: 0  km ";
+      }
+
+      // RED ROUTE CALCULATOR
+      function updateDistance(totalDist) {
+        totalShortDistance = totalDist;
+        document.getElementById("total_distance").innerHTML =
+          "<span style='color:red; font-weight: bolder'>" +
+          "Shortest Route: " +
+          totalShortDistance +
+          " km ";
+      }
+      function Calculate() {
+        const start = document.querySelector("#start").value;
+        const end = document.querySelector("#end").value;
+        let routeFunction = routes[start]?.[end];
+        if (routeFunction) {
+          routeFunction();
+        } else {
+          // default case or error
+        }
+        return totalShortDistance;
+      }
+
+      var routes = {
+        [sta]: {
+          [sta]: function () {
+            updateDistance(0);
+          },
+          [fes]: function () {
+            updateDistance(1);
+          },
+          [atc]: function () {
+            updateDistance(2);
+          },
+          [sou]: function () {
+            updateDistance(3);
+          },
+          [col]: function () {
+            updateDistance(4);
+          },
+          [uni]: function () {
+            updateDistance(5);
+          },
+          [cit]: function () {
+            updateDistance(6);
+          },
+          [max]: function () {
+            updateDistance(7);
+          },
+          [she]: function () {
+            updateDistance(1);
+          },
+          [sms]: function () {
+            updateDistance(2);
+          },
+          [sho]: function () {
+            updateDistance(3);
+          },
+          [coa]: function () {
+            updateDistance(5);
+          },
+          [bfr]: function () {
+            updateDistance(1);
+          },
+          [ama]: function () {
+            updateDistance(2);
+          },
+          [lan]: function () {
+            updateDistance(2);
+          },
+          [jol]: function () {
+            updateDistance(3);
+          },
+        },
+        [fes]: {
+          [sta]: function () {
+            updateDistance(1);
+          },
+          [fes]: function () {
+            updateDistance(0);
+          },
+          [atc]: function () {
+            updateDistance(1);
+          },
+          [sou]: function () {
+            updateDistance(2);
+          },
+          [col]: function () {
+            updateDistance(3);
+          },
+          [uni]: function () {
+            updateDistance(4);
+          },
+          [cit]: function () {
+            updateDistance(5);
+          },
+          [max]: function () {
+            updateDistance(6);
+          },
+          [coa]: function () {
+            updateDistance(6);
+          },
+          [sho]: function () {
+            updateDistance(4);
+          },
+          [she]: function () {
+            updateDistance(2);
+          },
+          [sms]: function () {
+            updateDistance(3);
+          },
+          [bfr]: function () {
+            updateDistance(2);
+          },
+          [ama]: function () {
+            updateDistance(4);
+          },
+          [lan]: function () {
+            updateDistance(3);
+          },
+          [jol]: function () {
+            updateDistance(4);
+          },
+        },
+        [atc]: {
+          [sta]: function () {
+            updateDistance(2);
+          },
+          [fes]: function () {
+            updateDistance(1);
+          },
+          [atc]: function () {
+            updateDistance(0);
+          },
+          [sou]: function () {
+            updateDistance(1);
+          },
+          [col]: function () {
+            updateDistance(2);
+          },
+          [uni]: function () {
+            updateDistance(3);
+          },
+          [cit]: function () {
+            updateDistance(4);
+          },
+          [max]: function () {
+            updateDistance(5);
+          },
+          [coa]: function () {
+            updateDistance(6);
+          },
+          [sho]: function () {
+            updateDistance(5);
+          },
+          [sms]: function () {
+            updateDistance(4);
+          },
+          [she]: function () {
+            updateDistance(3);
+          },
+          [bfr]: function () {
+            updateDistance(3);
+          },
+          [ama]: function () {
+            updateDistance(3);
+          },
+          [lan]: function () {
+            updateDistance(4);
+          },
+          [jol]: function () {
+            updateDistance(3);
+          },
+        },
+        [sou]: {
+          [sta]: function () {
+            updateDistance();
+          },
+          [fes]: function () {
+            updateDistance();
+          },
+          [atc]: function () {
+            updateDistance();
+          },
+          [sou]: function () {
+            updateDistance();
+          },
+          [col]: function () {
+            updateDistance();
+          },
+          [uni]: function () {
+            updateDistance();
+          },
+          [cit]: function () {
+            updateDistance();
+          },
+          [max]: function () {
+            updateDistance();
+          },
+          [coa]: function () {
+            updateDistance();
+          },
+          [sho]: function () {
+            updateDistance();
+          },
+          [sms]: function () {
+            updateDistance();
+          },
+          [she]: function () {
+            updateDistance();
+          },
+          [bfr]: function () {
+            updateDistance();
+          },
+          [ama]: function () {
+            updateDistance();
+          },
+          [lan]: function () {
+            updateDistance();
+          },
+          [jol]: function () {
+            updateDistance();
+          },
+        },
+        [col]: {
+          [sta]: function () {
+            updateDistance(1);
+          },
+          [fes]: function () {
+            updateDistance(0);
+          },
+          [atc]: function () {
+            updateDistance(1);
+          },
+          [sou]: function () {
+            updateDistance(2);
+          },
+          [col]: function () {
+            updateDistance(3);
+          },
+          [uni]: function () {
+            updateDistance(4);
+          },
+          [cit]: function () {
+            updateDistance(5);
+          },
+          [max]: function () {
+            updateDistance(6);
+          },
+          [coa]: function () {
+            updateDistance(7);
+          },
+          [sho]: function () {
+            updateDistance(9);
+          },
+          [bfr]: function () {
+            updateDistance(2);
+          },
+          [ama]: function () {
+            updateDistance(4);
+          },
+          [lan]: function () {
+            updateDistance(3);
+          },
+          [jol]: function () {
+            updateDistance(4);
+          },
+        },
+      };
+
+      // calculate and display the total distance for route short route only (bidirectional)
+      // function CalculateShortDistance() {
+      //     let start = document.querySelector('#start').value;
+      //     let end = document.querySelector('#end').value;
+      //     let totalShortDistance = 0;
+
+      //     // From Starmall
+
+      //     // 1 max
+      //     if ((start == sta && end == fes) || (start == fes && end == sta)) { totalShortDistance = starmall_festival; }
+      //     else if ((start == sta && end == atc) || (start == atc && end == sta)) { totalShortDistance = starmall_festival + festival_atc; }
+      //     else if ((start == sta && end == sou) || (start == sou && end == sta)) { totalShortDistance = starmall_festival + festival_atc + atc_southmall; }
+      //     else if ((start == sta && end == col) || (start == col && end == sta)) { totalShortDistance = starmall_festival + festival_atc + atc_southmall + southmall_colours; }
+      //     else if ((start == sta && end == uni) || (start == uni && end == sta)) { totalShortDistance = starmall_festival + festival_atc + atc_southmall + southmall_colours + colours_universitperpetualhelp; }
+      //     else if ((start == sta && end == cit) || (start == cit && end == sta)) { totalShortDistance = starmall_festival + festival_atc + atc_southmall + southmall_colours + colours_universitperpetualhelp + universitperpetualhelp_cityhalllaspinas; }
+      //     else if ((start == sta && end == max) || (start == max && end == sta)) { totalShortDistance = starmall_festival + festival_atc + atc_southmall + southmall_colours + colours_universitperpetualhelp + universitperpetualhelp_cityhalllaspinas + cityhalllaspinas_maxzapote; }
+
+      //     // 2 coastal
+      //     else if ((start == sta && end == she) || (start == she && end == sta)) { totalShortDistance = startmall_shellgasstationsucat; }
+      //     else if ((start == sta && end == sms) || (start == sms && end == sta)) { totalShortDistance = startmall_shellgasstationsucat + shellgasstationsucat_smsucat; }
+      //     else if ((start == sta && end == sho) || (start == sho && end == sta)) { totalShortDistance = startmall_shellgasstationsucat + shellgasstationsucat_smsucat + smsucat_shopwise; }
+      //     else if ((start == sta && end == coa) || (start == coa && end == sta)) { totalShortDistance = startmall_shellgasstationsucat + shellgasstationsucat_smsucat + smsucat_shopwise + shopwise_coastalmall; }
+
+      //     // 3 jollibee
+      //     else if ((start == sta && end == bfr) || (start == bfr && end == sta)) { totalShortDistance = bfresort_startmall; }
+      //     else if ((start == sta && end == ama) || (start == ama && end == sta)) { totalShortDistance = bfresort_startmall + amai_bfresort; }
+      //     else if ((start == sta && end == lan) || (start == lan && end == sta)) { totalShortDistance = bfresort_startmall + bfresort_landers; }
+      //     else if ((start == sta && end == jol) || (start == jol && end == sta)) { totalShortDistance = bfresort_startmall + bfresort_landers + landers_jolibeemolino; }
+
+      //     // From Festival mall
+
+      //     // 1 max
+      //     else if ((start == fes && end == atc) || (start == atc && end == fes)) { totalShortDistance = festival_atc; }
+      //     else if ((start == fes && end == sou) || (start == sou && end == fes)) { totalShortDistance = festival_atc + atc_southmall; }
+      //     else if ((start == fes && end == col) || (start == col && end == fes)) { totalShortDistance = festival_atc + atc_southmall + southmall_colours; }
+      //     else if ((start == fes && end == uni) || (start == uni && end == fes)) { totalShortDistance = festival_atc + atc_southmall + southmall_colours + colours_universitperpetualhelp; }
+      //     else if ((start == fes && end == cit) || (start == cit && end == fes)) { totalShortDistance = festival_atc + atc_southmall + southmall_colours + colours_universitperpetualhelp + universitperpetualhelp_cityhalllaspinas; }
+      //     else if ((start == fes && end == max) || (start == max && end == fes)) { totalShortDistance = festival_atc + atc_southmall + southmall_colours + colours_universitperpetualhelp + universitperpetualhelp_cityhalllaspinas + cityhalllaspinas_maxzapote; }
+
+      //     // 2 coastal
+      //     else if ((start == fes && end == she) || (start == she && end == fes)) { totalShortDistance = starmall_festival + startmall_shellgasstationsucat; }
+      //     else if ((start == fes && end == sms) || (start == sms && end == fes)) { totalShortDistance = starmall_festival + startmall_shellgasstationsucat + shellgasstationsucat_smsucat; }
+      //     else if ((start == fes && end == sho) || (start == sho && end == fes)) { totalShortDistance = starmall_festival + startmall_shellgasstationsucat + shellgasstationsucat_smsucat + smsucat_shopwise + shopwise_coastalmall; }
+      //     else if ((start == fes && end == coa) || (start == coa && end == fes)) { totalShortDistance = starmall_festival + startmall_shellgasstationsucat + shellgasstationsucat_smsucat + smsucat_shopwise + shopwise_coastalmall + shopwise_coastalmall; }
+
+      //     // 3 jollibee
+      //     else if ((start == fes && end == bfr) || (start == bfr && end == fes)) { totalShortDistance = starmall_festival + bfresort_startmall; }
+      //     else if ((start == fes && end == ama) || (start == ama && end == fes)) { totalShortDistance = starmall_festival + bfresort_startmall + amai_bfresort; }
+      //     else if ((start == fes && end == lan) || (start == lan && end == fes)) { totalShortDistance = starmall_festival + bfresort_startmall + bfresort_landers; }
+      //     else if ((start == fes && end == jol) || (start == jol && end == fes)) { totalShortDistance = starmall_festival + bfresort_startmall + bfresort_landers + landers_jolibeemolino; }
+
+      //     // From ATC mall
+
+      //     // 1 max
+      //     else if ((start == atc && end == sou) || (start == sou && end == atc)) { totalShortDistance = atc_southmall; }
+      //     else if ((start == atc && end == col) || (start == col && end == atc)) { totalShortDistance = atc_southmall + southmall_colours; }
+      //     else if ((start == atc && end == uni) || (start == uni && end == atc)) { totalShortDistance = atc_southmall + southmall_colours + colours_universitperpetualhelp; }
+      //     else if ((start == atc && end == cit) || (start == cit && end == atc)) { totalShortDistance = atc_southmall + southmall_colours + colours_universitperpetualhelp + universitperpetualhelp_cityhalllaspinas; }
+      //     else if ((start == atc && end == max) || (start == max && end == atc)) { totalShortDistance = atc_southmall + southmall_colours + colours_universitperpetualhelp + universitperpetualhelp_cityhalllaspinas + cityhalllaspinas_maxzapote; }
+
+      //     // 2 coastal
+      //     else if ((start == atc && end == she) || (start == she && end == atc)) { totalShortDistance = festival_atc + starmall_festival + startmall_shellgasstationsucat; }
+      //     else if ((start == atc && end == sms) || (start == sms && end == atc)) { totalShortDistance = festival_atc + starmall_festival + startmall_shellgasstationsucat + shellgasstationsucat_smsucat; }
+      //     else if ((start == atc && end == sho) || (start == sho && end == atc)) { totalShortDistance = festival_atc + starmall_festival + startmall_shellgasstationsucat + shellgasstationsucat_smsucat + smsucat_shopwise; }
+
+      //     else if ((start == atc && end == coa) || (start == coa && end == atc)) { totalShortDistance = atc_southmall + southmall_colours + colours_universitperpetualhelp + universitperpetualhelp_cityhalllaspinas + cityhalllaspinas_maxzapote + coastalmall_maxzapote; }
+
+      //     // 3 jollibee
+      //     else if ((start == atc && end == bfr) || (start == bfr && end == atc)) { totalShortDistance = festival_atc + starmall_festival + bfresort_startmall; }
+      //     else if ((start == atc && end == ama) || (start == ama && end == atc)) { totalShortDistance = atc_southmall + southmall_colours + colours_amaia; }
+      //     else if ((start == atc && end == lan) || (start == lan && end == atc)) { totalShortDistance = festival_atc + starmall_festival + bfresort_startmall + bfresort_landers; }
+      //     else if ((start == atc && end == jol) || (start == jol && end == atc)) { totalShortDistance = festival_atc + starmall_festival + bfresort_startmall + bfresort_landers + landers_jolibeemolino; }
+
+      //     // From Southmall
+
+      //     // 1 max
+      //     else if ((start == sou && end == col) || (start == col && end == sou)) { totalShortDistance = southmall_colours; }
+      //     else if ((start == sou && end == uni) || (start == uni && end == sou)) { totalShortDistance = southmall_colours + colours_universitperpetualhelp; }
+      //     else if ((start == sou && end == cit) || (start == cit && end == sou)) { totalShortDistance = southmall_colours + colours_universitperpetualhelp + universitperpetualhelp_cityhalllaspinas; }
+      //     else if ((start == sou && end == max) || (start == max && end == sou)) { totalShortDistance = southmall_colours + colours_universitperpetualhelp + universitperpetualhelp_cityhalllaspinas + cityhalllaspinas_maxzapotee; }
+
+      //     // 2 coastal
+      //     else if ((start == sou && end == she) || (start == she && end == sou)) { totalShortDistance = atc_southmall + festival_atc + starmall_festival + startmall_shellgasstationsucat; }
+      //     else if ((start == sou && end == sms) || (start == sms && end == sou)) { totalShortDistance = atc_southmall + festival_atc + starmall_festival + startmall_shellgasstationsucat + smsucat_shopwise; }
+      //     else if ((start == sou && end == sho) || (start == sho && end == sou)) { totalShortDistance = atc_southmall + festival_atc + starmall_festival + startmall_shellgasstationsucat + smsucat_shopwise + shopwise_coastalmall; }
+
+      //     else if ((start == sou && end == coa) || (start == coa && end == sou)) { totalShortDistance = southmall_colours + colours_universitperpetualhelp + universitperpetualhelp_cityhalllaspinas + cityhalllaspinas_maxzapote + coastalmall_maxzapote; }
+
+      //     // 3 jollibee
+      //     else if ((start == sou && end == bfr) || (start == bfr && end == sou)) { totalShortDistance = southmall_colours + colours_amaia + amai_bfresort; }
+      //     else if ((start == sou && end == ama) || (start == ama && end == sou)) { totalShortDistance = southmall_colours + colours_amaia; }
+      //     else if ((start == sou && end == lan) || (start == lan && end == sou)) { totalShortDistance = southmall_colours + jolibeemolino_colours + landers_jolibeemolino; }
+      //     else if ((start == sou && end == jol) || (start == jol && end == sou)) { totalShortDistance = southmall_colours + jolibeemolino_colours }
+
+      //     // From Colours
+
+      //     // 1 max
+      //     else if ((start == col && end == uni) || (start == uni && end == col)) { totalShortDistance = colours_universitperpetualhelp; }
+      //     else if ((start == col && end == cit) || (start == cit && end == col)) { totalShortDistance = colours_universitperpetualhelp + universitperpetualhelp_cityhalllaspinas; }
+      //     else if ((start == col && end == max) || (start == max && end == col)) { totalShortDistance = colours_universitperpetualhelp + universitperpetualhelp_cityhalllaspinas + cityhalllaspinas_maxzapote; }
+
+      //     // 2 coastal
+      //     else if ((start == col && end == she) || (start == she && end == col)) { totalShortDistance = southmall_colours + atc_southmall + festival_atc + starmall_festival + startmall_shellgasstationsucat; }
+      //     else if ((start == col && end == sms) || (start == sms && end == col)) { totalShortDistance = southmall_colours + atc_southmall + festival_atc + starmall_festival + startmall_shellgasstationsucat + smsucat_shopwise; }
+      //     else if ((start == col && end == coa) || (start == coa && end == col)) { totalShortDistance = colours_universitperpetualhelp + universitperpetualhelp_cityhalllaspinas + cityhalllaspinas_maxzapote + coastalmall_maxzapote; }
+      //     else if ((start == col && end == sho) || (start == sho && end == col)) { totalShortDistance = colours_universitperpetualhelp + universitperpetualhelp_cityhalllaspinas + cityhalllaspinas_maxzapote + coastalmall_maxzapote + shopwise_coastalmall; }
+
+      //     // 3 jollibee
+      //     else if ((start == col && end == bfr) || (start == bfr && end == col)) { totalShortDistance = colours_amaia + amai_bfresort; }
+      //     else if ((start == col && end == ama) || (start == ama && end == col)) { totalShortDistance = colours_amaia; }
+      //     else if ((start == col && end == lan) || (start == lan && end == col)) { totalShortDistance = jolibeemolino_colours + landers_jolibeemolino; }
+      //     else if ((start == col && end == jol) || (start == jol && end == col)) { totalShortDistance = southmall_colours + jolibeemolino_colours + landers_jolibeemolino; }
+
+      //     // From Perps
+
+      //     // 1 max
+      //     else if ((start == uni && end == cit) || (start == cit && end == uni)) { totalShortDistance = universitperpetualhelp_cityhalllaspinas; }
+      //     else if ((start == uni && end == max) || (start == max && end == uni)) { totalShortDistance = universitperpetualhelp_cityhalllaspinas + cityhalllaspinas_maxzapote; }
+
+      //     // 2 coastal
+      //     else if ((start == uni && end == she) || (start == she && end == uni)) { totalShortDistance = colours_universitperpetualhelp + southmall_colours + atc_southmall + festival_atc + starmall_festival + startmall_shellgasstationsucat; }
+      //     else if ((start == uni && end == coa) || (start == coa && end == uni)) { totalShortDistance = universitperpetualhelp_cityhalllaspinas + cityhalllaspinas_maxzapote + coastalmall_maxzapote; }
+      //     else if ((start == uni && end == sho) || (start == sho && end == uni)) { totalShortDistance = universitperpetualhelp_cityhalllaspinas + cityhalllaspinas_maxzapote + coastalmall_maxzapote + shopwise_coastalmall; }
+      //     else if ((start == uni && end == sms) || (start == sms && end == uni)) { totalShortDistance = universitperpetualhelp_cityhalllaspinas + cityhalllaspinas_maxzapote + coastalmall_maxzapote + shopwise_coastalmall + smsucat_shopwise; }
+
+      //     // 3 jollibee
+      //     else if ((start == uni && end == bfr) || (start == bfr && end == uni)) { totalShortDistance = colours_universitperpetualhelp + colours_amaia + amai_bfresort; }
+      //     else if ((start == uni && end == ama) || (start == ama && end == uni)) { totalShortDistance = colours_universitperpetualhelp + colours_amaia; }
+      //     else if ((start == uni && end == lan) || (start == lan && end == uni)) { totalShortDistance = colours_universitperpetualhelp + jolibeemolino_colours + landers_jolibeemolino; }
+      //     else if ((start == uni && end == jol) || (start == jol && end == uni)) { totalShortDistance = colours_universitperpetualhelp + jolibeemolino_colours; }
+
+      //     // From City Hall Las pinas
+
+      //     // 1 max
+      //     else if ((start == cit && end == max) || (start == max && end == cit)) { totalShortDistance = cityhalllaspinas_maxzapote; }
+
+      //     // 2 coastal
+      //     else if ((start == cit && end == she) || (start == she && end == cit)) { totalShortDistance = universitperpetualhelp_cityhalllaspinas + colours_universitperpetualhelp + southmall_colours + atc_southmall + festival_atc + starmall_festival + startmall_shellgasstationsucat; }
+      //     else if ((start == cit && end == coa) || (start == coa && end == cit)) { totalShortDistance = cityhalllaspinas_maxzapote + coastalmall_maxzapote; }
+      //     else if ((start == cit && end == sho) || (start == sho && end == cit)) { totalShortDistance = cityhalllaspinas_maxzapote + coastalmall_maxzapote + shopwise_coastalmall; }
+      //     else if ((start == cit && end == sms) || (start == sms && end == cit)) { totalShortDistance = cityhalllaspinas_maxzapote + coastalmall_maxzapote + shopwise_coastalmall + smsucat_shopwise; }
+
+      //     // 3 jollibee
+      //     else if ((start == cit && end == bfr) || (start == bfr && end == cit)) { totalShortDistance = universitperpetualhelp_cityhalllaspinas + colours_universitperpetualhelp + colours_amaia + amai_bfresort; }
+      //     else if ((start == cit && end == ama) || (start == ama && end == cit)) { totalShortDistance = universitperpetualhelp_cityhalllaspinas + colours_universitperpetualhelp + colours_amaia; }
+      //     else if ((start == cit && end == lan) || (start == lan && end == cit)) { totalShortDistance = universitperpetualhelp_cityhalllaspinas + colours_universitperpetualhelp + jolibeemolino_colours + landers_jolibeemolino; }
+      //     else if ((start == cit && end == jol) || (start == jol && end == cit)) { totalShortDistance = universitperpetualhelp_cityhalllaspinas + colours_universitperpetualhelp + jolibeemolino_colours; }
+
+      //     // From Max's restaurant Zapote
+
+      //     // 1 shell
+      //     else if ((start == max && end == coa) || (start == coa && end == max)) { totalShortDistance = coastalmall_maxzapote; }
+      //     else if ((start == max && end == sho) || (start == sho && end == max)) { totalShortDistance = coastalmall_maxzapote + shopwise_coastalmall; }
+      //     else if ((start == max && end == sms) || (start == sms && end == max)) { totalShortDistance = coastalmall_maxzapote + shopwise_coastalmall + smsucat_shopwise; }
+      //     else if ((start == max && end == she) || (start == she && end == max)) { totalShortDistance = coastalmall_maxzapote + shopwise_coastalmall + smsucat_shopwise + shellgasstationsucat_smsucat; }
+
+      //     // 2 jollibee
+      //     else if ((start == max && end == bfr) || (start == bfr && end == max)) { totalShortDistance = cityhalllaspinas_maxzapote + universitperpetualhelp_cityhalllaspinas + colours_universitperpetualhelp + colours_amaia + amai_bfresort; }
+      //     else if ((start == max && end == ama) || (start == ama && end == max)) { totalShortDistance = cityhalllaspinas_maxzapote + universitperpetualhelp_cityhalllaspinas + colours_universitperpetualhelp + colours_amaia; }
+      //     else if ((start == max && end == lan) || (start == lan && end == max)) { totalShortDistance = cityhalllaspinas_maxzapote + universitperpetualhelp_cityhalllaspinas + colours_universitperpetualhelp + jolibeemolino_colours + landers_jolibeemolino; }
+      //     else if ((start == max && end == jol) || (start == jol && end == max)) { totalShortDistance = cityhalllaspinas_maxzapote + universitperpetualhelp_cityhalllaspinas + colours_universitperpetualhelp + jolibeemolino_colours; }
+
+      //     // From Coastal Mall
+
+      //     // 1 shell
+      //     else if ((start == coa && end == sho) || (start == sho && end == coa)) { totalShortDistance = shopwise_coastalmall; }
+      //     else if ((start == coa && end == sms) || (start == sms && end == coa)) { totalShortDistance = shopwise_coastalmall + smsucat_shopwise; }
+      //     else if ((start == coa && end == she) || (start == she && end == coa)) { totalShortDistance = shopwise_coastalmall + smsucat_shopwise + shellgasstationsucat_smsucat; }
+
+      //     // 2 jollibee
+      //     else if ((start == coa && end == bfr) || (start == bfr && end == coa)) { totalShortDistance = coastalmall_maxzapote + cityhalllaspinas_maxzapote + universitperpetualhelp_cityhalllaspinas + colours_universitperpetualhelp + colours_amaia + amai_bfresort; }
+      //     else if ((start == coa && end == ama) || (start == ama && end == coa)) { totalShortDistance = coastalmall_maxzapote + cityhalllaspinas_maxzapote + universitperpetualhelp_cityhalllaspinas + colours_universitperpetualhelp + colours_amaia; }
+      //     else if ((start == coa && end == lan) || (start == lan && end == coa)) { totalShortDistance = coastalmall_maxzapote + cityhalllaspinas_maxzapote + universitperpetualhelp_cityhalllaspinas + colours_universitperpetualhelp + jolibeemolino_colours + landers_jolibeemolino; }
+      //     else if ((start == coa && end == jol) || (start == jol && end == coa)) { totalShortDistance = coastalmall_maxzapote + cityhalllaspinas_maxzapote + universitperpetualhelp_cityhalllaspinas + colours_universitperpetualhelp + jolibeemolino_colours; }
+
+      //     // From Shop wise
+
+      //     // 1 shell
+      //     else if ((start == sho && end == sms) || (start == sms && end == sho)) { totalShortDistance = smsucat_shopwise; }
+      //     else if ((start == sho && end == she) || (start == she && end == sho)) { totalShortDistance = smsucat_shopwise + shellgasstationsucat_smsucat; }
+
+      //     // 2 jollibee
+      //     else if ((start == sho && end == bfr) || (start == bfr && end == sho)) { totalShortDistance = smsucat_shopwise + shellgasstationsucat_smsucat + startmall_shellgasstationsucat + bfresort_startmall; }
+      //     else if ((start == sho && end == ama) || (start == ama && end == sho)) { totalShortDistance = shopwise_coastalmall + coastalmall_maxzapote + cityhalllaspinas_maxzapote + universitperpetualhelp_cityhalllaspinas + colours_universitperpetualhelp + colours_amaia; }
+      //     else if ((start == sho && end == lan) || (start == lan && end == sho)) { totalShortDistance = smsucat_shopwise + shellgasstationsucat_smsucat + startmall_shellgasstationsucat + bfresort_startmall + bfresort_landers; }
+      //     else if ((start == sho && end == jol) || (start == jol && end == sho)) { totalShortDistance = shopwise_coastalmall + coastalmall_maxzapote + cityhalllaspinas_maxzapote + universitperpetualhelp_cityhalllaspinas + colours_universitperpetualhelp + jolibeemolino_colours; }
+
+      //     // From Sm Sucat
+
+      //     // 1 shell
+      //     else if ((start == sms && end == she) || (start == she && end == sms)) { totalShortDistance = shellgasstationsucat_smsucat; }
+
+      //     // 2 jollibee
+      //     else if ((start == sms && end == bfr) || (start == bfr && end == sms)) { totalShortDistance = shellgasstationsucat_smsucat + startmall_shellgasstationsucat + bfresort_startmall; }
+      //     else if ((start == sms && end == ama) || (start == ama && end == sms)) { totalShortDistance = shellgasstationsucat_smsucat + startmall_shellgasstationsucat + bfresort_startmall + amai_bfresort; }
+      //     else if ((start == sms && end == lan) || (start == lan && end == sms)) { totalShortDistance = shellgasstationsucat_smsucat + startmall_shellgasstationsucat + bfresort_startmall + bfresort_landers; }
+      //     else if ((start == sms && end == jol) || (start == jol && end == sms)) { totalShortDistance = shellgasstationsucat_smsucat + startmall_shellgasstationsucat + bfresort_startmall + bfresort_landers + landers_jolibeemolino; }
+
+      //     // From Shell Gas
+
+      //     // 1 jollibee
+      //     else if ((start == she && end == bfr) || (start == bfr && end == she)) { totalShortDistance = startmall_shellgasstationsucat + bfresort_startmall; }
+      //     else if ((start == she && end == ama) || (start == ama && end == she)) { totalShortDistance = startmall_shellgasstationsucat + bfresort_startmall + amai_bfresort; }
+      //     else if ((start == she && end == lan) || (start == lan && end == she)) { totalShortDistance = startmall_shellgasstationsucat + bfresort_startmall + bfresort_landers; }
+      //     else if ((start == she && end == jol) || (start == jol && end == she)) { totalShortDistance = startmall_shellgasstationsucat + bfresort_startmall + bfresort_landers + landers_jolibeemolino; }
+
+      //     // BF Resort
+
+      //     // 1 jollibee
+      //     else if ((start == bfr && end == ama) || (start == ama && end == bfr)) { totalShortDistance = amai_bfresort; }
+      //     else if ((start == bfr && end == lan) || (start == lan && end == bfr)) { totalShortDistance = bfresort_landers; }
+      //     else if ((start == bfr && end == jol) || (start == jol && end == bfr)) { totalShortDistance = bfresort_landers + landers_jolibeemolino; }
+
+      //     // Amaia
+
+      //     // 1 jollibee
+      //     else if ((start == ama && end == lan) || (start == lan && end == ama)) { totalShortDistance = amai_bfresort + bfresort_landers; }
+      //     else if ((start == ama && end == jol) || (start == jol && end == ama)) { totalShortDistance = colours_amaia + jolibeemolino_colours; }
+
+      //     // Landers and Jollibee
+
+      //     else if ((start == lan && end == jol) || (start == jol && end == lan)) { totalShortDistance = landers_jolibeemolino; }
+      //     return totalShortDistance;
+      // }
+
+      const hamburger = document.querySelector("#toggle-btn")
+
+      hamburger.addEventListener("click", function() {
+        document.querySelector("#sidebar").classList.toggle("expand");
+        
+      })
+    </script>
+  </body>
+</html>
