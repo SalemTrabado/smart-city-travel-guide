@@ -11,9 +11,13 @@
       <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
       <script src="https://d3js.org/d3.v5.min.js"></script>
 <style>
+
   /* header content */
   .header {
     flex: 0 0 auto;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: sans-serif;
     color: rgb(7, 4, 18); /* 10% of the viewport height */
   }
     html,
@@ -24,155 +28,66 @@
         flex-direction: column;
         background-color: black;
       }
-  /* Sidebar content */
-  .sidebar {
-    background-color: #0e223e;
-    height: 90vh; /* Adjusting to fill the screen height minus header */
-  }
-
-  .container-main {
-      width: 70px;
-        height: 500px;
-        min-width: 70px;
-        z-index: 1000;
-        transition: all .25s ease-in-out;
-        display: flex;
-        flex-direction: column;
-        background-color: #0e223e;
-  }
-    :after
-    :before {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    }
-
-    a {
-    text-decoration: none;
-    }
-
-    li {
-    list-style: none;
-    }
-
-    h1 {
-    font-weight: 600;
-    font-size: 1.5rem;
-    }
-
-    body {
-    font-family: 'Poppins', sans-serif;
-    }
-
-    .wrapper{
-        display: flex;
-    }
-
-    .main{
-        min-height: 100vh;
-        width: 100%;
-        overflow: hidden;
-        transition: all 0.35s ease-in-out;
-        background-color: #fafbfe;
-      }
-
-    #sidebar{
-      width: 70px;
-      height: 500px;
-      min-width: 70px;
-      z-index: 1000;
-      transition: all .25s ease-in-out;
-      display: flex;
-      flex-direction: column;
-      background-color: #0e223e;
-    }
-
-    #sidebar.expand {
-        width: 260px;
-        min-width: 260px;
-      }
-
-    #toggle-btn {
-        background-color: transparent;
-        cursor: pointer;
-        border: 0;
-        padding: 1rem 1.5rem;
-      }
-    #toggle-btn i{
-        font-size: 1.5rem;
-        color: #ffff;
-      }
-    .sidebar-logo {
-        margin: auto 0;
-      }
-
-    .sidebar-logo a {
-        color: #ffff;
-        font-size: 1.15rem;
-        font-weight: 600;
-      }
-    #sidebar:not(.expand) .sidebar-logo,
-    #sidebar:not(.expand) a.sidebar-link span {
+      .hidden {
         display: none;
       }
-    .sidebar-nav {
-        padding: 2rem 0;
-        flex: 1 1 auto;
-      }
-    a.sidebar-link{
-        padding: .625 1.625rem;
-        color: #FFF;
-        display: block;
-        font-size: 0.9rem;
-        white-space: nowrap;
-        border-left: 3px solid transparent;
-      }
-    .sidebar-link i {
-    font-size: 1.1rem;
-    margin-right: .75rem;
-      }
-
-      a.sidebar-link:hover {
-    background-color: rgba(255, 255, 255, .075);
-    border-left: 3px solid #3b7ddd;
-      }
-
-    .sidebar-item {
-    position: relative;
-      }
-      
-    #sidebar:not(.expand) .sidebar-item .sidebar-dropdown {
-    position: absolute;
-    top: 0;
-    left: 70px;
-    background-color: #0e2238;
-    padding: 0;
-    min-width: 15rem;
-    display: none;
-      }
-      #sidebar:not(.expand) .sidebar-item:hover .has-dropdown+.sidebar-dropdown {
-    display: block;
-    max-height: 15em;
-    width: 100%;
-    opacity: 1;
-      }
-      #sidebar.expand .sidebar-link[data-bs-toggle="collapse"]::after {
-    border: solid;
-    border-width: 0 .075rem .075rem 0;
-    content: "";
-    display: inline-block;
-    padding: 2px;
-    position: absolute;
-    right: 1.5rem;
-    top: 1.4rem;
-    transform: rotate(-135deg);
-    transition: all .2s ease-out;
-      }
     
-      #sidebar.expand .sidebar-link[data-bs-toggle="collapse"].collapsed::after {
-    transform: rotate(45deg);
-    transition: all .2s ease-out;
-      }
+    header h2{
+      font-size: 30px;
+      font-weight: bold;
+      color: #0e223e;
+    } 
+    
+    header{
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 100%;
+    }
+
+    nav ul li{
+      list-style: none;
+      display: inline-block;
+    }
+
+    nav ul li a{
+      text-decoration: none;
+      color: black;
+      font-size: 23px;
+      padding: 0 15px;
+    }
+  
+  /* Sidebar content */
+  .sidebar {
+    width: 250px;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    background-color: #0e223e;
+    height: 100vh; /* Adjusting to fill the screen height minus header */
+    padding-top: 30px;
+  }
+
+
+  .sidebar a{
+    display: block;
+    padding: 10px 20px;
+    color: #bbb;
+    text-decoration: none;
+    font-family: "Rubik";
+    letter-spacing: 1px;
+  }
+
+  .sidebar a:hover{
+    color: #fff;
+    margin-left: 10px;
+    transition: 0.4s;
+  }
+
+  body{
+    margin: 0;
+  }
+
   
   /* map content */
   #map {
@@ -185,7 +100,8 @@
           url("map_lp.png");
         background-size: cover;
         display: block;
-        margin: auto;
+        margin-left: auto;
+        margin-right: auto;
         border: 1px solid black;
       }
 
@@ -202,7 +118,7 @@
 
       #content {
         min-height: 100vh;
-        display: flex;
+        display: flex;  
         align-items: center;
         justify-content: center;
       }
@@ -297,35 +213,60 @@
         padding-left: 10px;
       }
 
+      .autocomplete-items {
+        position: absolute;
+        border: 1px solid #d4d4d4;
+        border-bottom: none;
+        border-top: none;
+        z-index: 99;
+        top: 100%;
+        left: 0;
+        right: 0;
+      }
+      .autocomplete-items div {
+        padding: 10px;
+        cursor: pointer;
+        background-color: #fff;
+        border-bottom: 1px solid #d4d4d4;
+      }
+      .autocomplete-items div:hover {
+        background-color: #e9e9e9;
+      }
+
 </style>
 </head>
 <body>
-<div class="container-fluid p-0">
-  <div class="header">
-    <!-- Header Content -->
+  <!-- Header Content -->
+  <div class="container-fluid p-0">
+    <div class="header">
+      <div class="container-fluid p-1">
+        <header id="header" class="container-fluid bg-light py-2">
+          <div class="text-center">
+            <h2>SMART CITY TRAVEL GUIDE</h2>
+          </div>
+        <nav>
+          <ul>
+            <li><a href="#" style="text-decoration: none">About</a></li>
+            <li><a href="#" style="text-decoration: none">Guide</a></li>
+            <li><a href="#" style="text-decoration: none">Contact</a></li>
+          </ul>
+        </nav>
+        </header>
+      </div>
+    </div>
+  </div>
+  <!-- Sidebar Content -->
+  <div class="row g-0">
+    <div class="col-2 sidebar">
       <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" 
           integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" 
           crossorigin="anonymous"></script>
-    <div class="container-fluid p-0">
-      <header id="header" class="container-fluid bg-light py-3">
-        <div class="text-center">
-          <h1>SMART CITY TRAVEL GUIDE</h1>
-        </div>
-        </header>
-    </div>
-  </div>
-  <div class="row g-0">
-    <div class="col-2 sidebar">
-      <!-- Sidebar Content -->
       <aside id="sidebar"> 
-        <div class="d-flex">
-          <button id="toggle-btn" type="button">
-            <i class="lni lni-grid-alt"></i>
-          </button>
+        <!-- <div class="d-flex">
           <div class="sidebar-logo">
-            <a href="#">Smart City Guide</a>
+            <h1>Smart City Guide</h1>
           </div>
-        </div>
+        </div> -->
         <div>
         <ul class="sidebar-item">
             <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse" data-bs-target="#cat" 
@@ -335,29 +276,73 @@
             </a>
             <ul id="cat" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
               <li class="sidebar-item">
-
-                <a href="#" class="sidebar-link">Hotel</a>
+                <a href="#" class="sidebar-link">Attractionsa</a>
               </li>
               <li class="sidebar-item">
                 <a href="#" class="sidebar-link">Restaurants</a>
               </li>
+              <li class="sidebar-item">
+                <a href="#" class="sidebar-link">Malls</a>
+              </li>
+              <li class="sidebar-item">
+               <a href="#" class="sidebar-link">Gas Station</a>
+              </li>
+              <li class="sidebar-item">
+                <a href="#" class="sidebar-link">Municipal</a>
+              </li>
+                <li class="sidebar-item">
+               <a href="#" class="sidebar-link">Hospital</a>
+              </li>
+              </li>
+                <li class="sidebar-item">
+               <a href="#" class="sidebar-link">Unique Stay</a>
+              </li>
+            </li>
+            <li class="sidebar-item">
+           <a href="#" class="sidebar-link">Night Market</a>
+          </li>
+               </li>
             </ul>
           </ul>
         <ul class="sidebar-item">
-              <a href="#" class="sidebar-link has-dropdown collapsed" data-bs-toggle="collapse" data-bs-target="#recom" 
+              <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse" data-bs-target="#recom" 
                 aria-expanded="false" aria-controls="recom">
                 <i class="lni lni-search"></i>
                 <span>Recommendation</span>
               </a>
               <ul id="recom" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
                 <li class="sidebar-item">
-                  <a href="#" class="sidebar-link">Top Hotels in San Juan</a>
+                  <a href="#" class="sidebar-link">Top Hotels</a>
                 </li>
                 <li class="sidebar-item">
-                  <a href="#" class="sidebar-link">Top Restaurants in San Juan</a>
+                  <a href="#" class="sidebar-link">Top Restaurants</a>
+                </li>
+                <li class="sidebar-item">
+                  <a href="#" class="sidebar-link">Top Malls</a>
                 </li>
               </ul>
           </ul>
+        <ul class="sidebar-item">
+          <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse" data-bs-target="#language" 
+            aria-expanded="false" aria-controls="language">
+            <i class="lni lni-search"></i>
+            <span>Languages</span>
+          </a>
+          <ul id="language" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+            <li class="sidebar-item">
+              <a href="#" class="sidebar-link">English</a>
+            </li>
+            <li class="sidebar-item">
+              <a href="#" class="sidebar-link">Tagalog</a>
+            </li>
+            <li class="sidebar-item">
+              <a href="#" class="sidebar-link">France</a>
+            </li>
+            <li class="sidebar-item">
+              <a href="#" class="sidebar-link">Japanese</a>
+            </li>
+          </ul>
+        </ul>
       </aside>
     </div>
 
@@ -370,8 +355,20 @@
               <div class="card">
                 <div class="card-body">
                   <h5 class="card-title">Route Finder</h5>
-    
-                  <div class="form-group row">
+                  <!-- Autosearch bar -->
+                  <div id="searcha" class="form-group row">
+                    <input
+                      id="start1"
+                      type="text"
+                      placeholder="Type Start Lccation here..."/>
+                  </div>
+                  <div id="searchb" class="form-group row">
+                    <input
+                      id="end1"
+                      type="text"
+                      placeholder="Type End Lccation here..."/>
+                  </div>
+                  <div id="diva" style="display: none" class="form-group row">
                     <label for="start" class="col-lg-8">Start:</label>
                     <div class="col-lg-6">
                       <select
@@ -380,7 +377,7 @@
                       ></select>
                     </div>
                   </div>
-                  <div class="form-group row">
+                  <div id="divb" style="display: none" class="form-group row">
                     <label for="end" class="col-lg-8">End:</label>
                     <div class="col-lg-6">
                       <select
@@ -389,10 +386,12 @@
                       ></select>
                     </div>
                   </div>
+                
                   <button onclick="findPath()" class="btn btn-primary">
                     Find Route
                   </button>
                   <button onclick="reset()" class="btn btn-danger">Reset</button>
+                  <button onclick="showhideDiv()" class="btn btn-primary">Switch</button>
                 </div>
                 <div id="breadcrumb">
                   <div id="distance"><span id="total_distance"></span></div>
@@ -415,21 +414,58 @@
   <script>
       var totalShortDistance = 0;
       var totalOtherRoutesDistance = 0;
+      // window.onload = function () {
+      //   const start_select = document.getElementById("start");
+      //   const end_select = document.getElementById("end");
+      //   Object.keys(nodes).forEach((key) => {
+      //     let option1 = document.createElement("option");
+      //     option1.text = key;
+      //     option1.value = key;
+      //     start_select.add(option1);
+
+      //     let option2 = document.createElement("option");
+      //     option2.text = key;
+      //     option2.value = key;
+      //     end_select.add(option2);
+      //   });
+      // };
+
       window.onload = function () {
         const start_select = document.getElementById("start");
         const end_select = document.getElementById("end");
-        Object.keys(nodes).forEach((key) => {
+        Object.keys(nodes).forEach((key) => { 
           let option1 = document.createElement("option");
           option1.text = key;
           option1.value = key;
           start_select.add(option1);
-
           let option2 = document.createElement("option");
           option2.text = key;
           option2.value = key;
           end_select.add(option2);
         });
+
+      document
+          .getElementById("start1")
+          .addEventListener("change", function () {
+            const selectedValue = this.value;
+            start_select.value = selectedValue;
+          });
+        document.getElementById("end1").addEventListener("change", function () {
+          const selectedValue = this.value;
+          end_select.value = selectedValue;
+        });
       };
+
+      function selectDropdownOption(inputId, selectId) {
+        const input = document.getElementById(inputId).value.trim();
+        const select = document.getElementById(selectId);
+        for (let i = 0; i < select.options.length; i++) {
+          if (select.options[i].value === input) {
+            select.selectedIndex = i;
+            break;
+          }
+        }
+      }
 
       // create location code:
       // use this if I want to rename the location
@@ -500,7 +536,7 @@
       var jolibeemolino_colours = 1;
       var startmall_shellgasstationsucat = 1;
       var shellgasstationsucat_smsucat = 1;
-      var smsucat_shopwise = 1;
+      var smsucat_shopwise = 2;
       var shopwise_coastalmall = 2;
       var coastalmall_maxzapote = 1;
 
@@ -560,25 +596,25 @@
       let locations = [
         [
           Infinity,
-          1,
-          Infinity,
-          Infinity,
-          Infinity,
-          Infinity,
-          Infinity,
-          Infinity,
-          Infinity,
-          Infinity,
-          Infinity,
           2,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
           3,
+          1,
           Infinity,
           Infinity,
           Infinity,
         ], // "Starmall" 0
 
         [
-          1,
+          2,
           Infinity,
           1,
           Infinity,
@@ -598,9 +634,9 @@
 
         [
           Infinity,
-          1,
+          2,
           Infinity,
-          1,
+          2,
           Infinity,
           Infinity,
           Infinity,
@@ -620,7 +656,7 @@
           Infinity,
           1,
           Infinity,
-          1,
+          2,
           Infinity,
           Infinity,
           Infinity,
@@ -640,17 +676,17 @@
           Infinity,
           1,
           Infinity,
-          2,
-          Infinity,
-          Infinity,
-          Infinity,
-          Infinity,
-          Infinity,
-          Infinity,
-          Infinity,
           3,
           Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
+          Infinity,
           2,
+          Infinity,
+          1,
         ], // Colours" 4
 
         [
@@ -911,6 +947,14 @@
         let start = document.querySelector("#start").value;
         let end = document.querySelector("#end").value;
 
+        if (locationsList.includes(start) && locationsList.includes(end)) {
+        //alert('Both locations are valid!');
+        // Perform your route finding logic here
+      } else {
+        alert('One or both of the locations are invalid. Please check your input.');
+        return
+      }
+
         // let shortestPathInfo = shortestPath(locations, 12, getIndex(start)); // Changed 10 to 12
         let shortestPathInfo = shortestPath(
           locations,
@@ -980,7 +1024,7 @@
               colours_amaia +
               southmall_colours +
               atc_southmall +
-              festival_atc;
+              festival_atc; 
             lineHelper([sta, bfr, ama, col, sou, atc, fes], bfr, tot);
             break;
 
@@ -1004,8 +1048,8 @@
             break;
 
           case (start === sta && end === col) || (start === col && end === sta):
-            tot = bfresort_startmall + amai_bfresort + colours_amaia;
-            lineHelper([sta, bfr, ama, col], bfr, tot);
+            tot = starmall_festival + festival_atc + atc_southmall + southmall_colours;
+            lineHelper([sta, fes, atc, sou, col], fes, tot);
             tot =
               startmall_shellgasstationsucat +
               shellgasstationsucat_smsucat +
@@ -1208,7 +1252,7 @@
             lineHelper([fes, sta, she, sms, sho, coa, max, cit, uni], sta, tot);
             break;
 
-          case (start === fes && end === cit) || (start === fes && end === fes):
+          case (start === fes && end === cit) || (start === fes && end === cit):
             tot =
               starmall_festival +
               startmall_shellgasstationsucat +
@@ -1304,8 +1348,12 @@
             break;
 
           case (start === fes && end === ama) || (start === ama && end === fes):
-            tot = starmall_festival + bfresort_startmall + amai_bfresort;
-            lineHelper([fes, sta, bfr, ama], sta, tot);
+            tot = 
+              festival_atc +
+              atc_southmall +
+              southmall_colours +
+              colours_amaia;
+            lineHelper([fes, atc, sou, col, ama], atc, tot);
             break;
 
           case (start === fes && end === lan) || (start === lan && end === fes):
@@ -1320,11 +1368,11 @@
 
           case (start === fes && end === jol) || (start === jol && end === fes):
             tot =
-              starmall_festival +
-              bfresort_startmall +
-              bfresort_landers +
-              landers_jolibeemolino;
-            lineHelper([fes, sta, bfr, lan, jol], sta, tot);
+            festival_atc +
+              atc_southmall +
+              southmall_colours +
+              jolibeemolino_colours;
+            lineHelper([fes, atc, sou, col, jol], atc, tot);
             break;
 
           // From ATC
@@ -1382,7 +1430,7 @@
             break;
 
           case (start === atc && end === max) || (start === max && end === atc):
-            tot =
+            tot = 
               festival_atc +
               starmall_festival +
               startmall_shellgasstationsucat +
@@ -1390,7 +1438,7 @@
               smsucat_shopwise +
               shopwise_coastalmall +
               coastalmall_maxzapote;
-            lineHelper([atc, fes, sta, she, sms, sho, coa, max], fse, tot);
+            lineHelper([atc, fes, sta, she, sms, sho, coa, max], fes, tot);
             break;
 
           case (start === atc && end === coa) || (start === coa && end === atc):
@@ -1440,11 +1488,7 @@
               shopwise_coastalmall +
               smsucat_shopwise +
               shellgasstationsucat_smsucat;
-            lineHelper(
-              [atc, sou, col, uni, cit, max, coa, sho, sms, she],
-              sou,
-              tot
-            );
+            lineHelper([atc, sou, col, uni, cit, max, coa, sho, sms, she], sou, tot);
             break;
 
           case (start === atc && end === bfr) || (start === bfr && end === atc):
@@ -1464,11 +1508,11 @@
 
           case (start === atc && end === lan) || (start === lan && end === atc):
             tot =
-              festival_atc +
-              starmall_festival +
-              bfresort_startmall +
-              bfresort_landers;
-            lineHelper([atc, fes, sta, bfr, lan], fes, tot);
+              atc_southmall +
+              southmall_colours +
+              jolibeemolino_colours + 
+              landers_jolibeemolino;
+            lineHelper([atc, sou, col, jol, lan], sou, tot);
             break;
 
           case (start === atc && end === jol) || (start === jol && end === atc):
@@ -2683,31 +2727,31 @@
         for (let place in connections) {
           // console.log("PLACE: " + place);
           for (let connectToPlace in connections[place]) {
-            //  console.log("nodes[connectToPlace]: " + connectToPlace); 7
-            //  console.log("connections[place][connectToPlace]: " +connections[place][connectToPlace]);
-            //  console.log("place: " + place);
-            // let x1 = nodes[place].x;
-            // let y1 = nodes[place].y;
-            // let x2 = nodes[connectToPlace].x;
-            // let y2 = nodes[connectToPlace].y;
-            // let midX = (x1 + x2) / 2;
-            // let midY = (y1 + y2) / 2;
+            console.log("nodes[connectToPlace]: " + connectToPlace); 7
+            console.log("connections[place][connectToPlace]: " +connections[place][connectToPlace]);
+            console.log("place: " + place);
+            let x1 = nodes[place].x;
+            let y1 = nodes[place].y;
+            let x2 = nodes[connectToPlace].x;
+            let y2 = nodes[connectToPlace].y;
+            let midX = (x1 + x2) / 2;
+            let midY = (y1 + y2) / 2;
             // svg
-            //   .append("text")
-            //   .attr("x", midX)
-            //   .attr("y", midY)
-            //   .text(connections[place][connectToPlace]) // the distance (numbers)
-            //   .style("stroke", "green")
-            //   .style("font-size", "20px")
-            //   .style("color", "black");
-            // svg
-            //   .append("line")
-            //   .style("stroke", "gray")
-            //   .style("stroke-width", 2) // thickness of line
-            //   .attr("x1", x1)
-            //   .attr("y1", y1)
-            //   .attr("x2", x2)
-            //   .attr("y2", y2);
+            // .append("text")
+            // .attr("x", midX)
+            //    .attr("y", midY)
+            //    .text(connections[place][connectToPlace]) // the distance (numbers)
+            //    .style("stroke", "green")
+            //    .style("font-size", "20px")
+            //    .style("color", "black");
+             svg
+               .append("line")
+               .style("stroke", "gray")
+               .style("stroke-width", 2) // thickness of line
+               .attr("x1", x1)
+               .attr("y1", y1)
+               .attr("x2", x2)
+               .attr("y2", y2);
           }
         }
       }
@@ -2780,9 +2824,16 @@
           .attr("x", (d) => d[1].x - 10)
           .attr("y", (d) => d[1].y + 5)
           .text((d) => d[0]);
-        document.getElementById("total_distance").innerHTML =
-          "<span style='color:red; font-weight: bolder'>" +
-          "Shortest Route: 0  km ";
+        document.getElementById("total_distance").innerHTML = "";
+        document.getElementById("other_total_distance").innerHTML = "";
+
+        // document.getElementById("total_distance").innerHTML =
+        //   "<span style='color:red; font-weight: bolder'>" +
+        //   "Shortest Route: 0  km "; 
+
+
+         document.getElementById("start1").value = "";
+         document.getElementById("end1").value = "";
       }
 
       // RED ROUTE CALCULATOR
@@ -2821,16 +2872,16 @@
             updateDistance(3);
           },
           [col]: function () {
-            updateDistance(4);
+            updateDistance(3);
           },
           [uni]: function () {
-            updateDistance(5);
+            updateDistance(4);
           },
           [cit]: function () {
-            updateDistance(6);
+            updateDistance(5);
           },
           [max]: function () {
-            updateDistance(7);
+            updateDistance(6);
           },
           [she]: function () {
             updateDistance(1);
@@ -2959,6 +3010,56 @@
         },
         [sou]: {
           [sta]: function () {
+            updateDistance(3);
+          },
+          [fes]: function () {
+            updateDistance(2);
+          },
+          [atc]: function () {
+            updateDistance(1);
+          },
+          [sou]: function () {
+            updateDistance(0);
+          },
+          [col]: function () {
+            updateDistance(1);
+          },
+          [uni]: function () {
+            updateDistance(2);
+          },
+          [cit]: function () {
+            updateDistance(3);
+          },
+          [max]: function () {
+            updateDistance(4);
+          },
+          [coa]: function () {
+            updateDistance(5);
+          },
+          [sho]: function () {
+            updateDistance(6);
+          },
+          [sms]: function () {
+            updateDistance(5);
+          },
+          [she]: function () {
+            updateDistance(4);
+          },
+          [bfr]: function () {
+            updateDistance(3);
+          },
+          [ama]: function () {
+            updateDistance(2);
+          },
+          [lan]: function () {
+            updateDistance(3);
+          },
+          [jol]: function () {
+            updateDistance(2);
+          },
+        },
+        [col]: {
+          [sta]: function () {
             updateDistance();
           },
           [fes]: function () {
@@ -3007,48 +3108,54 @@
             updateDistance();
           },
         },
-        [col]: {
+        [uni]: {
           [sta]: function () {
-            updateDistance(1);
+            updateDistance();
           },
           [fes]: function () {
-            updateDistance(0);
+            updateDistance();
           },
           [atc]: function () {
-            updateDistance(1);
+            updateDistance();
           },
           [sou]: function () {
-            updateDistance(2);
+            updateDistance();
           },
           [col]: function () {
-            updateDistance(3);
+            updateDistance();
           },
           [uni]: function () {
-            updateDistance(4);
+            updateDistance();
           },
           [cit]: function () {
-            updateDistance(5);
+            updateDistance();
           },
           [max]: function () {
-            updateDistance(6);
+            updateDistance();
           },
           [coa]: function () {
-            updateDistance(7);
+            updateDistance();
           },
           [sho]: function () {
-            updateDistance(9);
+            updateDistance();
+          },
+          [sms]: function () {
+            updateDistance();
+          },
+          [she]: function () {
+            updateDistance();
           },
           [bfr]: function () {
-            updateDistance(2);
+            updateDistance();
           },
           [ama]: function () {
-            updateDistance(4);
+            updateDistance();
           },
           [lan]: function () {
-            updateDistance(3);
+            updateDistance();
           },
           [jol]: function () {
-            updateDistance(4);
+            updateDistance();
           },
         },
       };
@@ -3278,12 +3385,220 @@
       //     return totalShortDistance;
       // }
 
-      const hamburger = document.querySelector("#toggle-btn")
+      // const hamburger = document.querySelector("#toggle-btn")
 
-      hamburger.addEventListener("click", function() {
-        document.querySelector("#sidebar").classList.toggle("expand");
+      // hamburger.addEventListener("click", function() {
+      //   document.querySelector("#sidebar").classList.toggle("expand");
         
-      })
+      // })
+        // AUTO COMPLETE HANDLER
+
+      function autocomplete(inp, arr) {
+        var currentFocus;
+        inp.addEventListener("input", function (e) {
+          var a,
+            b,
+            i,
+            val = this.value;
+          closeAllLists();
+          if (!val) {
+            return false;
+          }
+          currentFocus = -1;
+          a = document.createElement("DIV");
+          a.setAttribute("id", this.id + "autocomplete-list");
+          a.setAttribute("class", "autocomplete-items");
+          this.parentNode.appendChild(a);
+          for (i = 0; i < arr.length; i++) {
+            if (
+              arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()
+            ) {
+              b = document.createElement("DIV");
+              b.innerHTML =
+                "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+              b.innerHTML += arr[i].substr(val.length);
+              b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+              b.addEventListener("click", function (e) {
+                inp.value = this.getElementsByTagName("input")[0].value;
+                closeAllLists();
+              });
+              a.appendChild(b);
+            }
+          }
+        });
+
+        inp.addEventListener("keydown", function (e) {
+          var x = document.getElementById(this.id + "autocomplete-list");
+          if (x) x = x.getElementsByTagName("div");
+          if (e.keyCode == 40) {
+            currentFocus++;
+            addActive(x);
+          } else if (e.keyCode == 38) {
+            currentFocus--;
+            addActive(x);
+          } else if (e.keyCode == 13) {
+            e.preventDefault();
+            if (currentFocus > -1) {
+              if (x) x[currentFocus].click();
+            }
+          }
+        });
+        function addActive(x) {
+          if (!x) return false;
+          removeActive(x);
+          if (currentFocus >= x.length) currentFocus = 0;
+          if (currentFocus < 0) currentFocus = x.length - 1;
+          x[currentFocus].classList.add("autocomplete-active");
+        }
+        function removeActive(x) {
+          for (var i = 0; i < x.length; i++) {
+            x[i].classList.remove("autocomplete-active");
+          }
+        }
+        function closeAllLists(elmnt) {
+          var x = document.getElementsByClassName("autocomplete-items");
+          for (var i = 0; i < x.length; i++) {
+            if (elmnt != x[i] && elmnt != inp) {
+              x[i].parentNode.removeChild(x[i]);
+            }
+          }
+        }
+        document.addEventListener("click", function (e) {
+          closeAllLists(e.target);
+        });
+      }
+
+      // AUTO COMPLETE HANDLER
+      function autocomplete(inp, arr) {
+        var currentFocus;
+        inp.addEventListener("input", function (e) {
+          var a,
+            b,
+            i,
+            val = this.value;
+          closeAllLists();
+          if (!val) {
+            return false;
+          }
+          currentFocus = -1;
+          a = document.createElement("DIV");
+          a.setAttribute("id", this.id + "autocomplete-list");
+          a.setAttribute("class", "autocomplete-items");
+          this.parentNode.appendChild(a);
+          for (i = 0; i < arr.length; i++) {
+            if (
+              arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()
+            ) {
+              b = document.createElement("DIV");
+              b.innerHTML =
+                "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+              b.innerHTML += arr[i].substr(val.length);
+              b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+              b.addEventListener("click", function (e) {
+                inp.value = this.getElementsByTagName("input")[0].value;
+                closeAllLists();
+                inp.dispatchEvent(new Event("change")); // Trigger change event
+              });
+              a.appendChild(b);
+            }
+          }
+        });
+        inp.addEventListener("keydown", function (e) {
+          var x = document.getElementById(this.id + "autocomplete-list");
+          if (x) x = x.getElementsByTagName("div");
+          if (e.keyCode == 40) {
+            currentFocus++;
+            addActive(x);
+          } else if (e.keyCode == 38) {
+            currentFocus--;
+            addActive(x);
+          } else if (e.keyCode == 13) {
+            e.preventDefault();
+            if (currentFocus > -1) {
+              if (x) x[currentFocus].click();
+            }
+          }
+        });
+        function addActive(x) {
+          if (!x) return false;
+          removeActive(x);
+          if (currentFocus >= x.length) currentFocus = 0;
+          if (currentFocus < 0) currentFocus = x.length - 1;
+          x[currentFocus].classList.add("autocomplete-active");
+        }
+        function removeActive(x) {
+          for (var i = 0; i < x.length; i++) {
+            x[i].classList.remove("autocomplete-active");
+          }
+        }
+        function closeAllLists(elmnt) {
+          var x = document.getElementsByClassName("autocomplete-items");
+          for (var i = 0; i < x.length; i++) {
+            if (elmnt != x[i] && elmnt != inp) {
+              x[i].parentNode.removeChild(x[i]);
+            }
+          }
+        }
+        document.addEventListener("click", function (e) {
+          closeAllLists(e.target);
+        });
+      }
+
+      /* An array containing the specific locations */
+      var locationsList = [
+        "Starmall - Alabang",
+        "Festival Mall",
+        "ATC Mall",
+        "Southmall",
+        "Colours Mall Moonwalk",
+        "University of Perpetual Help",
+        "City Hall Las Pinas",
+        "Max's Restaurant - Zapote",
+        "Costal Mall",
+        "Shopwise Sucat",
+        "SM Sucat",
+        "Shell Gas Station - Sucat Road",
+        "BF Ressort Drive",
+        "Amaia Steps Pillar Alabang",
+        "Landers",
+        "Jollibee Molino",
+      ];
+
+      /*initiate the autocomplete function on the "myInput" element, and pass along the locations array as possible autocomplete values:*/
+      autocomplete(document.getElementById("start1"), locationsList);
+      autocomplete(document.getElementById("end1"), locationsList);
+
+      // AUTO COMPLETE HANDLER
+      
+
+      // Switching Search bar to Select element (viceversa)
+
+      var diva = document.getElementById('diva')
+      var divb = document.getElementById('divb')
+      var searcha = document.getElementById('searcha')
+      var searchb = document.getElementById('searchb')
+      display = 0;
+
+      function showhideDiv()
+      {
+        if(display == 0)
+        {
+          diva.style.display='block';
+          divb.style.display='block';
+          searcha.style.display='none';
+          searchb.style.display='none';
+          display = 1;
+        }
+        else
+        {
+          diva.style.display='none';
+          divb.style.display='none';
+          searcha.style.display='block';
+          searchb.style.display='block';
+          display = 0;
+        }
+      }
+      
     </script>
   </body>
 </html>
