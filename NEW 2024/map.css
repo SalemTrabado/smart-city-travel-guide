@@ -1,0 +1,241 @@
+  /* header content */
+  .header {
+    flex: 0 0 auto;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: sans-serif;
+    color: rgb(7, 4, 18); /* 10% of the viewport height */
+  }
+    html,
+    body {
+        height: 100%;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        background-color: black;
+      }
+      .hidden {
+        display: none;
+      }
+   
+    header h2{
+      font-size: 30px;
+      font-weight: bold;
+      color: #0e223e;
+    }
+   
+    header{
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 100%;
+    }  
+
+    nav ul li{
+      list-style: none;
+      display: inline-block;
+      position: relative;
+    }
+
+    nav ul li a{
+      text-decoration: none;
+      color: black;
+      font-size: 23px;
+      padding: 0 15px;  
+    }
+
+    nav ul li ul.dropdown li{
+      display:block;
+    }
+
+    nav ul li ul.dropdown{
+      width: 100%;
+      position: absolute;
+      background: #f8f9fa;
+      z-index: 999;
+      display: none;
+    }
+
+    nav ul li a:hover{
+      background: lightgrey;
+    }
+
+    nav ul li:hover ul.dropdown {
+      display: block;
+    }
+ 
+  /* Sidebar content */
+  .sidebar {
+    width: 250px;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    background-color: #0e223e;
+    height: 100vh; /* Adjusting to fill the screen height minus header */
+    padding-top: 30px;
+  }
+
+
+  .sidebar a{
+    display: block;
+    padding: 10px 20px;
+    color: #bbb;
+    text-decoration: none;
+    font-family: "Rubik";
+    letter-spacing: 1px;
+  }
+
+  .sidebar a:hover{
+    color: #fff;
+    margin-left: 10px;
+    transition: 0.4s;
+  }
+
+  body{
+    margin: 0;
+  }
+
+ 
+  /* map content */
+  #map {
+        background-image:
+                /* linear-gradient(to bottom, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), */ linear-gradient(
+            to bottom,
+            rgba(255, 255, 255, 0.3),
+            rgba(255, 255, 255, 0.3)
+          ),
+          url("map_lp.png");
+        background-size: cover;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        border: 1px solid black;
+      }
+
+      #cnt {
+        flex: 1 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      #footer {
+        flex: 0 0 auto;
+      }
+
+      #content {
+        min-height: 100vh;
+        display: flex;  
+        align-items: center;
+        justify-content: center;
+      }
+
+      .scrollable {
+        width: 800px;
+        height: 800px;
+        overflow: auto;
+        margin: auto;
+      }
+
+      .link {
+        fill: none;
+        stroke: gray;
+        stroke-width: 3;
+      }
+
+      .start {
+        fill: green;
+        stroke: black;
+        stroke-width: 3px;
+      }
+
+      .end {
+        fill: red;
+        stroke: black;
+        stroke-width: 3px;
+      }
+
+      .selected {
+        stroke: red;
+        stroke-width: 5;
+      }
+
+      /* set circle color */
+      .node {
+        fill: rgb(162, 224, 17);
+        stroke: green;
+        stroke-width: 3px;
+      }
+
+      text {
+        fill: rgb(25, 6, 49);
+        font-weight: bolder;
+      }
+
+      .float-left {
+        float: left;
+      }
+
+      .dropdown-width {
+        width: 300px;
+      }
+
+      .tooltip {
+        position: absolute;
+        text-align: center;
+        padding: 10px;
+        font-size: 20px;
+        background: yellow;
+        color: #333;
+        border: 1px solid rgb(15, 7, 7);
+        border-radius: 5px;
+        opacity: 0.8;
+        pointer-events: none;
+        cursor: pointer;
+      }
+   
+      .start,
+      .end,
+      .node {
+        stroke: black;
+        stroke-width: 3px;
+        cursor: pointer;
+      }
+
+      #distance {
+        font-size: larger;
+        font-weight: bold;
+      }
+
+      #otherdistance {
+        font-size: larger;
+        font-weight: bold;
+        color: gray;
+      }
+
+      #breadcrumb {
+        font-size: small;
+        margin-top: 0px;
+        padding-top: 0px;
+        padding-left: 10px;
+      }
+
+      .autocomplete-items {
+        position: absolute;
+        border: 1px solid #d4d4d4;
+        border-bottom: none;
+        border-top: none;
+        z-index: 99;
+        top: 100%;
+        left: 0;
+        right: 0;
+      }
+      .autocomplete-items div {
+        padding: 10px;
+        cursor: pointer;
+        background-color: #fff;
+        border-bottom: 1px solid #d4d4d4;
+      }
+      .autocomplete-items div:hover {
+        background-color: #e9e9e9;
+      }
