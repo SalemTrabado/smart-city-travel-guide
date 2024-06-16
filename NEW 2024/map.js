@@ -46,9 +46,9 @@ var fes = "Festival Mall";
 var atc = "ATC Mall"; // bfrda
 var sou = "Southmall";
 var col = "Colours Mall Moonwalk"; // moonwalk public market
-var uni = "University of Perpetual Help";
+var uni = "Perpetual Help Medical Center";
 var cit = "City Hall Las Pinas";
-var max = "Max's Restaurant - Zapote"; // new max
+var max = "Max Restaurant - Zapote"; // new max
 var coa = "Costal Mall";
 var sho = "Shopwise Sucat"; // ama
 var sms = "SM Sucat"; // sm sucat
@@ -57,6 +57,7 @@ var bfr = "BF Ressort Skillets & Grill"; // (new) from amalibbee-pillar go to BF
 var ama = "Amaia Steps Alabang"; // pillar village
 var lan = "Landers"; // (new) from amalibee-pillar to Landers
 var jol = "Jollibee Molino";
+var sss = "Sample";
 
 // User this if i want to change the coordinates x and y (circle x,y pos)
 var Starmallx = 531;
@@ -91,6 +92,8 @@ var CostalMallx = 340;
 var CostalMally = 630;
 var JollibeeMolinox = 950;
 var JollibeeMolinoy = 500;
+var Samplex = 1000;
+var Sampley = 800;
 
 // distance configuration
 var starmall_festival = 1;
@@ -111,6 +114,8 @@ var shellgasstationsucat_smsucat = 1;
 var smsucat_shopwise = 2;
 var shopwise_coastalmall = 2;
 var coastalmall_maxzapote = 1;
+var jolibeemolino_sample = 1;
+var sample_maxzapote = 1;
 
 // define distance betwen locations
 let connections = {
@@ -128,7 +133,7 @@ let connections = {
   },
   [uni]: { [cit]: universitperpetualhelp_cityhalllaspinas },
   [cit]: { [max]: cityhalllaspinas_maxzapote },
-  [max]: { [coa]: coastalmall_maxzapote },
+  [max]: { [coa]: coastalmall_maxzapote, [sss]: sample_maxzapote},
   [ama]: { [bfr]: amai_bfresort },
   [bfr]: { [lan]: bfresort_landers, [sta]: bfresort_startmall },
   [lan]: { [jol]: landers_jolibeemolino },
@@ -136,6 +141,7 @@ let connections = {
   [sms]: { [sho]: smsucat_shopwise },
   [sho]: { [coa]: shopwise_coastalmall },
   [coa]: { [max]: coastalmall_maxzapote },
+  [jol]: { [sss]: jolibeemolino_sample, },
 };
 
 // define the nodes where I applied the cooordinates  ****
@@ -156,6 +162,7 @@ var nodes = {
   [ama]: { x: AmiaStepsPillarx, y: AmiaStepsPillary }, // 13
   [lan]: { x: Landersx, y: Landersy }, // 14
   [jol]: { x: JollibeeMolinox, y: JollibeeMolinoy }, // 15
+  [sss]: { x: Samplex, y: Sampley}, //16
 };
 
 var svg = d3.select("svg");
@@ -183,12 +190,14 @@ let locations = [
     Infinity,
     Infinity,
     Infinity,
+    Infinity,
   ], // "Starmall" 0
 
   [
     1,
     Infinity,
     1,
+    Infinity,
     Infinity,
     Infinity,
     Infinity,
@@ -221,6 +230,7 @@ let locations = [
     Infinity,
     Infinity,
     Infinity,
+    Infinity,
   ], // ATC Las Pinas" 2
 
   [
@@ -229,6 +239,7 @@ let locations = [
     1,
     Infinity,
     1,  
+    Infinity,
     Infinity,
     Infinity,
     Infinity,
@@ -259,6 +270,7 @@ let locations = [
     3,
     Infinity,
     3,
+    Infinity,
   ], // Colours" 4
 
   [
@@ -269,6 +281,7 @@ let locations = [
     1,
     Infinity,
     1,
+    Infinity,
     Infinity,
     Infinity,
     Infinity,
@@ -297,6 +310,7 @@ let locations = [
     Infinity,
     Infinity,
     Infinity,
+    Infinity,
   ], // City hall las pinas" 6
 
   [
@@ -315,7 +329,7 @@ let locations = [
     Infinity,
     Infinity,
     Infinity,
-    Infinity,
+    1,
   ], // MAX  7
 
   [
@@ -329,6 +343,7 @@ let locations = [
     1,
     Infinity,
     3,
+    Infinity,
     Infinity,
     Infinity,
     Infinity,
@@ -354,6 +369,7 @@ let locations = [
     Infinity,
     Infinity,
     Infinity,
+    Infinity,
   ], // " SHOWP WISE" 9 - 2
 
   [
@@ -366,9 +382,11 @@ let locations = [
     Infinity,
     Infinity,
     Infinity,
+    Infinity,
     1,
     Infinity,
     1,
+    Infinity,
     Infinity,
     Infinity,
     Infinity,
@@ -387,6 +405,7 @@ let locations = [
     Infinity,
     Infinity,
     1,
+    Infinity,
     Infinity,
     Infinity,
     Infinity,
@@ -411,6 +430,7 @@ let locations = [
     1,
     1,
     Infinity,
+    Infinity,
   ], // BF" Stop 12 - 3
 
   [
@@ -427,6 +447,7 @@ let locations = [
     Infinity,
     Infinity,
     1,
+    Infinity,
     Infinity,
     Infinity,
     Infinity,
@@ -449,6 +470,7 @@ let locations = [
     Infinity,
     Infinity,
     1,
+    Infinity,
   ], // "Landers" 14 - 3
 
   [
@@ -468,7 +490,28 @@ let locations = [
     Infinity,
     1,
     Infinity,
+    1,
   ], // " Jolibee Molino" 15 - 3
+
+  [
+    Infinity,
+    Infinity,
+    Infinity,
+    Infinity,
+    Infinity,
+    Infinity,
+    Infinity,
+    1,
+    Infinity,
+    Infinity,
+    Infinity,
+    Infinity,
+    Infinity,
+    Infinity,
+    Infinity,
+    Infinity,
+    1,
+  ], // "Sample" 16 - 3
 ];
 
 function constructPath(shortestPathInfo, endVertex) {
@@ -3401,9 +3444,9 @@ var locationsList = [
   "ATC Mall",
   "Southmall",
   "Colours Mall Moonwalk",
-  "University of Perpetual Help",
+  "Perpetual Help Medical Center",
   "City Hall Las Pinas",
-  "Max's Restaurant - Zapote",
+  "Max Restaurant - Zapote",
   "Costal Mall",
   "Shopwise Sucat",
   "SM Sucat",
@@ -3412,6 +3455,7 @@ var locationsList = [
   "Amaia Steps Alabang",
   "Landers",
   "Jollibee Molino",
+  "Sample",
 ];
 
 /*initiate the autocomplete function on the "myInput" element, and pass along the locations array as possible autocomplete values:*/
@@ -3552,4 +3596,56 @@ elem.textContent = langData[lang][key];
 
 document.getElementById("start1").placeholder = langData[lang]['start_location'];
 document.getElementById("end1").placeholder = langData[lang]['end_location'];
+
+
+//  document.getElementById("start1").value = "Starmall - Alabang";
+//   document.getElementById("end1").value = "Colours Mall Moonwalk";
+
+  // document.getElementById("start1").value = "ATC Mall";
+  // document.getElementById("end1").value = "BF Ressort Drive";
+
 }
+
+function setLocationsName(s,e){
+
+ var startName = document.getElementById("start1").value;
+ var endtName = document.getElementById("end1").value;
+
+ if (startName==""){
+  document.getElementById("start1").value = s;
+  selectOptionByValue('start', document.getElementById("start1").value);
+  selectOptionByValue('end', document.getElementById("start1").value);
+ }
+ else
+  {
+     //if the start name is the same then dont execute the below line
+     if(startName!=s)
+     {
+      document.getElementById("end1").value = e;
+      selectOptionByValue('start', document.getElementById("start1").value);
+      selectOptionByValue('end', document.getElementById("end1").value);
+     }
+  }
+}
+
+function selectOptionByValue(selectId, value) {
+  let selectElement = document.getElementById(selectId);
+  for (let option of selectElement.options) {
+    if (option.value === value) {
+      option.selected = true;
+      break;
+    }
+  }
+}
+
+//Recommendation
+// function topHotels(){
+//   //alert("Amaia Hotel /n Hyatt /n ABC Hoel");
+//   document.getElementById("tops").innerText = "This is a sample hotel"  ;
+
+
+// }
+// function topRestaurant(){
+//   alert("Amaia Hotel /n Hyatt /n ABC Hoel");
+
+// }
