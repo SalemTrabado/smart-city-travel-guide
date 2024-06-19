@@ -239,3 +239,27 @@
       .autocomplete-items div:hover {
         background-color: #e9e9e9;
       }
+
+      @media (max-width: 500px) {
+        .card {
+            display: flex;
+            margin-left: 22rem;
+        }
+      }
+
+      @media (max-width: 375px) {
+        .card {
+          display: flex;
+          margin-left: 810px;
+          margin-right: 800px;
+        }
+      }
+
+      @media (max-width: 375px) {
+        #map {
+          display: block;
+          margin-bottom: 5px;
+          margin-left: 800px;
+          
+        }
+      }
